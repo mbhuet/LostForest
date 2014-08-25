@@ -1,0 +1,243 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"footpr",
+				"footprint_marker"
+			],
+			[
+				"footpri",
+				"footprint"
+			],
+			[
+				"el",
+				"elif	else if"
+			],
+			[
+				"Fle",
+				"MyFleets"
+			],
+			[
+				"for",
+				"fore	for (each)"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "Assets/Scripts/WalkAnimation.cs",
+			"settings":
+			{
+				"buffer_size": 3388,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "using UnityEngine;\nusing System.Collections;\n\npublic class WalkAnimation2 : MonoBehaviour {\n\n	Actor actor;\n	public GameObject leftFoot;\n	public GameObject rightFoot;\n\n\n	GameObject footprint_marker;\n\n	GameObject leftOrigin;\n	GameObject rightOrigin;\n\n	GameObject[] feet;\n	GameObject[] origins;\n	Vector3[] footprints;\n	Vector3[] old_footprints;\n\n	// 0 is left, 1 is right\n	int activeFoot;\n	\n	Vector3 oldPos;\n	float speed;\n\n	public float stepLength = 1;\n\n	// Use this for initialization\n	void Awake () {\n		oldPos = this.transform.position;\n		actor = this.gameObject.GetComponent<Actor>();\n\n		if (leftFoot == null || rightFoot == null){\n			Debug.LogError(this.name + \" does not have both feet added to the WalkAnimation script.\");\n		}\n\n		leftFoot.transform.parent = null;\n		rightFoot.transform.parent =  null;\n		feet = new GameObject[]{leftFoot, rightFoot};\n\n		CreateOriginPoints();\n		origins = new GameObject[]{leftOrigin, rightOrigin};\n\n		footprints = new Vector3[]{leftOrigin.transform.position, rightOrigin.transform.position};\n\n		old_footprints = new Vector3[2];\n\n		activeFoot = 0;\n		\n		//footprint_marker = GameObject.\n	}\n	\n	void Update () {\n\n	}\n\n	\n	void FixedUpdate(){\n		MoveFoot();\n	}\n\n	void MoveFoot(){\n		CalculateSpeed();\n\n		feet[activeFoot].transform.rotation = this.transform.rotation;\n\n		UpdateFootprints();\n		float delta_footprint = Vector3.Distance(old_footprints[activeFoot], footprints[activeFoot]);\n\n\n		/* USED for checking ground level\n		LayerMask mask = 1 << LayerMask.NameToLayer(\"Ground\");\n		RaycastHit hit;\n		Ray ray = new Ray(footprint + Vector3.up * 1, Vector3.down);\n		Physics.Raycast(ray, out hit, 1, mask);\n\n		if (hit.collider == null){\n			footprint = activeOrigin.transform.position;\n		}\n		else\n			footprint.y = hit.point.y;\n		*/\n\n		float footSpeed = speed * 2;\n\n		//TODO, force walker to return to idle stance if no moveDir\n		//footSpeed = Mathf.Max(.1f, footSpeed);\n\n		Vector3 stepDirection = (footprints[activeFoot] - feet[activeFoot].transform.position).normalized;\n\n		if (Vector3.Distance(feet[activeFoot].transform.position, footprints[activeFoot]) < footSpeed){\n			feet[activeFoot].transform.Translate(stepDirection * footSpeed, Space.World);\n			SwitchFoot();\n		}\n		else{\n			feet[activeFoot].transform.Translate(stepDirection * footSpeed, Space.World);\n		}\n\n\n\n\n	}\n\n\n	void SwitchFoot(){\n\n		if (activeFoot == 0){\n			activeFoot = 1;\n		}\n		else {\n			activeFoot = 0;\n		}\n\n		if (Vector3.Distance(feet[activeFoot].transform.position, origins[activeFoot].transform.position) > stepLength){\n			feet[activeFoot].transform.position = origins[activeFoot].transform.position + (feet[activeFoot].transform.position - origins[activeFoot].transform.position).normalized * stepLength;\n		}\n	}\n\n	void CreateOriginPoints(){\n		leftOrigin = new GameObject();\n		leftOrigin.name = \"leftOrigin\";\n		leftOrigin.transform.position = leftFoot.transform.position;\n		leftOrigin.transform.parent = this.transform;\n\n		rightOrigin = new GameObject();\n		rightOrigin.name = \"rightOrigin\";\n		rightOrigin.transform.position = rightFoot.transform.position;\n		rightOrigin.transform.parent = this.transform;\n	}\n\n	void CalculateSpeed(){\n		speed = Vector3.Distance(this.transform.position, oldPos);\n		oldPos = this.transform.position;\n	}\n\n	void UpdateFootprints(){\n		for (int i = 0; i < 2; i++){\n			old_footprints[i] = new Vector3(footprints[i].x, footprints[i].y, footprints[i].z);\n			footprints[i] = origins[i].transform.position + actor.moveDir * stepLength;\n		}\n	}\n}\n",
+			"file": "Assets/Scripts/WalkAnimation2.cs",
+			"file_size": 3457,
+			"file_write_time": 130480414664729490,
+			"settings":
+			{
+				"buffer_size": 3459,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 58.0,
+		"selected_items":
+		[
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 400.0
+	},
+	"console":
+	{
+		"height": 0.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/E/Desktop/java_starter_package/log.txt",
+		"/E/Desktop/java_starter_package/Planet.java",
+		"/E/Desktop/java_starter_package/Fleet.java",
+		"/E/Desktop/java_starter_package/PlanetWars.java",
+		"/E/Desktop/java_starter_package/MyBot.java"
+	],
+	"find":
+	{
+		"height": 0.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 1,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "Assets/Scripts/WalkAnimation.cs",
+					"settings":
+					{
+						"buffer_size": 3388,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C#/C#.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "Assets/Scripts/WalkAnimation2.cs",
+					"settings":
+					{
+						"buffer_size": 3459,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1084,
+								1084
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C#/C#.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 135.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 0.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 65.0
+	},
+	"replace":
+	{
+		"height": 0.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 150.0,
+	"status_bar_visible": true
+}
