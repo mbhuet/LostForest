@@ -1,0 +1,29 @@
+AnimatedFantasyHeroes include:
+
+Models and textures:
+-Characters (Warrior, Archer - x 3 textures)
+-Shields(3 models x 3 textures)
+-Helmets(3 models x 3 textures)
+-Shoulders(3 models x 3 textures)
+-Bracers(3 models x 3 textures)
+-Weapons(Sword, Bow)
+
+Animations in frames (in FBX):
+-0-29 (30)
+-35-65 (30)
+-70-130 (60)
+-135-165 (30)
+-170-200 (30)
+-205-235 (30)
+-240-270 (30)
+-275-285 (10)
+-290-320 (30)
+
+For all items were created prefabs. If you want to equip item you have to place prefab on the slots (you can filter model (by "slot") to find slots in character hierarchy) :
+Bracers - Bracers_slot (left and right)
+Shoulder - Shoulders_slot (left and right)
+Helmet - Helmet_slot
+Shield, Bow - ShieldBow_Slot 
+Sword - Weapon_Slot
+
+You can easily create a scripts to equip items on events (pick up item, equipment interface...) just changing parent to 'Item'_Slot. For character you only need to change material. 
