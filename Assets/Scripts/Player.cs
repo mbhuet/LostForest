@@ -2,6 +2,12 @@
 using System.Collections;
 
 public class Player : Actor {
+	public override void Awake(){
+		base.Awake ();
+	}
+
+}
+	/*
 	public bool lockDirections;
 	public bool lookAtCursor;
 
@@ -116,3 +122,4 @@ public class Player : Actor {
 
 
 }
+*/

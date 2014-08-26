@@ -5,7 +5,7 @@
 	<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
 	<ProductVersion>10.0.20506</ProductVersion>
 	<SchemaVersion>2.0</SchemaVersion>
-	<ProjectGuid>{486C76DA-423C-52D1-C12F-F0CD3351C15D}</ProjectGuid>
+	<ProjectGuid>{5F4ACCB5-43ED-4DEE-F4BB-F31EED1DD706}</ProjectGuid>
 	<OutputType>Library</OutputType>
 	<AppDesignerFolder>Properties</AppDesignerFolder>
 	<RootNamespace></RootNamespace>
@@ -50,16 +50,9 @@
      <Compile Include="Assets\Standard Assets\Scripts\General Scripts\ActivateTrigger.cs" />
      <None Include="Assets\Standard Assets\Toon Shading\Sources\Shaders\Toony-Basic.shader" />
      <None Include="Assets\Standard Assets\Toon Shading\Sources\Shaders\OutlineToonShader.shader" />
-     <None Include="Assets\FullFantasyGameSet\11kAnimatedFantasyHeroes\Documentation.txt" />
      <None Include="Assets\Standard Assets\Toon Shading\Sources\Shaders\Toony-BasicOutline.shader" />
-     <None Include="Assets\FullFantasyGameSet\LowpolyToonForest\materials\TerrainShader2Diff.shader" />
      <None Include="Assets\Standard Assets\Toon Shading\Sources\Shaders\Toony-LightedOutline.shader" />
      <None Include="Assets\Standard Assets\Toon Shading\Sources\Shaders\Toony-Lighted.shader" />
-     <None Include="Assets\FullFantasyGameSet\LowpolyToonForestWinter\materials\TerrainShader2Diff.shader" />
-     <None Include="Assets\FullFantasyGameSet\LowpolyToonForestWinter\shaders\DoublesidedCutout\AlphaTest-DiffuseDoublesided.shader" />
-     <None Include="Assets\FullFantasyGameSet\FantasyWeaponsSet\Documentation.txt" />
-     <None Include="Assets\Locomotion System Files\Characters\Heron Artwork\Vegetation-TwoPass.shader" />
-     <None Include="Assets\FullFantasyGameSet\LowpolyToonForestWinter\shaders\DoublesidedCutout\AlphaTest-DiffuseBack.shader" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

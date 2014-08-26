@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Inventory : MonoBehaviour {
+public class PlayerInput : MonoBehaviour, IActorInput {
 
 	// Use this for initialization
 	void Start () {
@@ -10,6 +10,6 @@ public class Inventory : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	
+		
 	}
 }

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class PlayerInput : ActorBrain {
+public class PlayerInventory : MonoBehaviour, IInventory {
 
 	// Use this for initialization
 	void Start () {

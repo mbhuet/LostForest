@@ -144,7 +144,9 @@ public class WalkAnimation : MonoBehaviour {
 	void UpdateFootprints(){
 		for (int i = 0; i < 2; i++){
 			old_footprints[i] = new Vector3(footprints[i].x, footprints[i].y, footprints[i].z);
-			footprints[i] = origins[i].transform.position + actor.moveDir * stepLength;
+			//TODO fix this next line to work with an Actor.
+			//footprints[i] = origins[i].transform.position + actor.moveDir * stepLength;
 		}
 	}
+
 }

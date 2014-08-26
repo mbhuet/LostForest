@@ -6,7 +6,6 @@ public class Sword : Weapon {
 
 	// Use this for initialization
 	void Awake(){
-		lockOrientation = true;
 
 	}
 
@@ -18,8 +17,12 @@ public class Sword : Weapon {
 	
 	}
 
-	public override void Use(){
-		hand.transform.LookAt(GameManager.cursorWorldPosition);
+	public override void BeginUse(){
 	}
+	public override void HoldUse(){
+	}
+	public override void EndUse(){
+	}
+	
 
 }
