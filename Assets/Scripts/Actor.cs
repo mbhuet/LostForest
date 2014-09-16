@@ -1,15 +1,21 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/*
+[RequireComponent (typeof (IActorInput))]
+[RequireComponent (typeof (IInventory))]
+[RequireComponent (typeof (IActorStats))]
+*/
+
 public abstract class Actor : MonoBehaviour{
-	public Vector3 moveDir;
-	public float health;
-	public float stamina;
+	IActorInput actorInput;
+	IInventory inventory;
+	IActorStats stats;
 
-	public float moveSpeed = .06f;
-
-	public Weapon rightWeapon;
-	public Weapon leftWeapon;
-	protected bool twoHanded;
+	public virtual void Awake(){
+		actorInput = (IActorInput)GetComponent(typeof(IActorInput));
+		inventory = (IInventory)this.GetComponent(typeof(IInventory));
+		stats = (IActorStats)this.GetComponent(typeof(IActorStats));
+	}
 
 }

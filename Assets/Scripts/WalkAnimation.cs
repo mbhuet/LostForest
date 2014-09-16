@@ -1,6 +1,9 @@
 using UnityEngine;
 using System.Collections;
 
+[RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(IActorMotor))]
+
 public class WalkAnimation : MonoBehaviour {
 
 	Actor actor;
@@ -144,7 +147,8 @@ public class WalkAnimation : MonoBehaviour {
 	void UpdateFootprints(){
 		for (int i = 0; i < 2; i++){
 			old_footprints[i] = new Vector3(footprints[i].x, footprints[i].y, footprints[i].z);
-			footprints[i] = origins[i].transform.position + actor.moveDir * stepLength;
+			footprints[i] = origins[i].transform.position + rigidbody.velocity.normalized * stepLength;
 		}
 	}
+
 }
