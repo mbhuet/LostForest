@@ -18,10 +18,7 @@ public class Sword : Weapon {
 	public GameObject strikeEffect;
 
 
-	//TODO: Hold for overhead slash, tap for horizontal slash, .2f seconds for hold
-	//don't animate until either hold >= .2f or endUse
-	//TODO: give window after attack for a combo follow up
-	// Use this for initialization
+
 	void Awake(){
 		swipeTrail = this.GetComponent<MeleeWeaponTrail> ();
 	}
@@ -58,7 +55,7 @@ public class Sword : Weapon {
 			if (act != null){
 
 				//SPECIAL EFFECT
-				GameObject obj = (GameObject)GameObject.Instantiate(strikeEffect, col.renderer.bounds.center, Quaternion.identity) as GameObject;
+				GameObject obj = (GameObject)GameObject.Instantiate(strikeEffect, col.collider.bounds.center, Quaternion.identity) as GameObject;
 				IEffect effect = (IEffect) obj.gameObject.GetComponent( typeof(IEffect) );
 				effect.Run();
 				obj.transform.parent = col.transform;

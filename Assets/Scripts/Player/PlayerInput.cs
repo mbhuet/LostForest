@@ -8,7 +8,6 @@ public class PlayerInput : MonoBehaviour, IActorInput {
 	private Vector3 lookTarget;
 	private IActorMotor motor;
 	private WeaponManager weapons;
-	private Vector3 cursorWorldPosition;
 
 	// Use this for initialization
 	void Awake () {
@@ -17,8 +16,7 @@ public class PlayerInput : MonoBehaviour, IActorInput {
 	}
 
 	void Update () {
-		UpdateCursor();
-		motor.Look (cursorWorldPosition);
+		motor.Look (GameManager.Instance.cursorWorldPosition);
 
 		for (int i = 0; i <2; i++){
 			if (Input.GetMouseButtonDown(i)){
@@ -40,17 +38,7 @@ public class PlayerInput : MonoBehaviour, IActorInput {
 		}
 	}
 
-	void UpdateCursor(){
-		LayerMask mask = 1 << LayerMask.NameToLayer("Ground");
-		RaycastHit hit;
-		Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-		Physics.Raycast(ray, out hit, 100, mask);
-		
-		if (hit.collider != null){
-			//			Debug.Log("Hit Ground");
-			cursorWorldPosition = hit.point;
-		}
-	}
+
 	// Update is called once per frame
 
 }

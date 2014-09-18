@@ -6,6 +6,10 @@ public class Player : Actor {
 		base.Awake ();
 	}
 
+	void Start(){
+		animation.Play("Idle");
+	             }
+
 }
 	/*
 	public bool lockDirections;

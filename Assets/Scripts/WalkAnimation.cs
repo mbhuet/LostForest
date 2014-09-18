@@ -98,13 +98,6 @@ public class WalkAnimation : MonoBehaviour {
 		else{
 			feet[activeFoot].transform.Translate(stepDirection * footSpeed, Space.World);
 
-			/*
-			float foot_y = -(stepHeight/(stepLength*stepLength)) * Mathf.Pow(Vector3.Distance(origins[activeFoot].transform.position, new Vector3(feet[activeFoot].transform.position.x, origins[activeFoot].transform.position.y, feet[activeFoot].transform.position.z)),2) + stepHeight;
-			Debug.Log(foot_y);
-			feet[activeFoot].transform.position = new Vector3(feet[activeFoot].transform.position.x,
-			                                                  foot_y,
-			                                                  feet[activeFoot].transform.position.z);
-			*/
 		}
 
 
