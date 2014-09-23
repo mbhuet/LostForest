@@ -10,6 +10,6 @@ public class Dummy : Actor {
 	
 	// Update is called once per frame
 	void Update () {
-	
+//		Debug.Log (rigidbody.IsSleeping());
 	}
 }

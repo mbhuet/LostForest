@@ -28,19 +28,19 @@ public class WeaponManager : MonoBehaviour{
 	}
 
 	public void BeginUse(int hand){
-		if (hand < weaponList.Length)
+		if (hand < weaponList.Length && weaponList[hand] != null)
 		weaponList[hand].BeginUse(hand);
 		else
-			Debug.LogError("There is no weapon " + hand + " on " + this.gameObject.name);
+			Debug.Log("There is no weapon " + hand + " on " + this.gameObject.name);
 	}
 
 	public void HoldUse(int hand){
-		if (hand < weaponList.Length)
+		if (hand < weaponList.Length && weaponList[hand] != null)
 		weaponList[hand].HoldUse(hand);
 	}
 
 	public void EndUse(int hand){
-		if (hand < weaponList.Length)
+		if (hand < weaponList.Length && weaponList[hand] != null)
 		weaponList[hand].EndUse(hand);
 	}
 

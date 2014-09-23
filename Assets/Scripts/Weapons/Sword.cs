@@ -53,6 +53,7 @@ public class Sword : Weapon {
 		if (active){
 			Actor act = col.gameObject.GetComponent<Actor>();
 			if (act != null){
+				if (act != this.owner){
 
 				//SPECIAL EFFECT
 				GameObject obj = (GameObject)GameObject.Instantiate(strikeEffect, col.collider.bounds.center, Quaternion.identity) as GameObject;
@@ -63,7 +64,9 @@ public class Sword : Weapon {
 				//*****************************
 
 				Vector3 forceDir = (act.transform.position - owner.transform.position).normalized;
-				act.rigidbody.AddForce(forceDir*100);
+				forceDir.y = 0;
+				act.GetComponent<ActorMotor>().Knockback(forceDir * 10);
+				}
 			}
 
 		}

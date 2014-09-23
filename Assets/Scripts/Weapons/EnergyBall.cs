@@ -36,8 +36,9 @@ public class EnergyBall : Projectile {
 								//*****************************
 			
 								Vector3 forceDir = (act.transform.position - this.transform.position).normalized;
-								act.rigidbody.AddForce (forceDir * 100 * size);
-						}
+				forceDir.y = 0;
+				act.GetComponent<ActorMotor>().Knockback(forceDir * size * 2);
+			}
 				}
 		GameObject.Destroy (this.gameObject);
 	}
@@ -57,7 +58,8 @@ public class EnergyBall : Projectile {
 				//*****************************
 				
 				Vector3 forceDir = (act.transform.position - this.transform.position).normalized;
-				act.rigidbody.AddForce(forceDir*100 * size);
+				forceDir.y = 0;
+				act.GetComponent<ActorMotor>().Knockback(forceDir * size * 2);
 			}
 			
 		}
