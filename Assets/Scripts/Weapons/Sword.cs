@@ -49,11 +49,12 @@ public class Sword : Weapon {
 	}
 
 	void OnTriggerEnter(Collider col){
-
+		//Debug.Log (col.gameObject.name);
 		if (active){
 			Actor act = col.gameObject.GetComponent<Actor>();
 			if (act != null){
-
+				if (act != this.owner){
+					Debug.Log(act.name);
 				//SPECIAL EFFECT
 				GameObject obj = (GameObject)GameObject.Instantiate(strikeEffect, col.collider.bounds.center, Quaternion.identity) as GameObject;
 				IEffect effect = (IEffect) obj.gameObject.GetComponent( typeof(IEffect) );
@@ -64,6 +65,7 @@ public class Sword : Weapon {
 
 				Vector3 forceDir = (act.transform.position - owner.transform.position).normalized;
 				act.rigidbody.AddForce(forceDir*100);
+				}
 			}
 
 		}
