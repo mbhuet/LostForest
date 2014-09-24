@@ -57,8 +57,8 @@ public class Sword : Weapon {
 
 				//SPECIAL EFFECT
 				GameObject obj = (GameObject)GameObject.Instantiate(strikeEffect, col.collider.bounds.center, Quaternion.identity) as GameObject;
-				IEffect effect = (IEffect) obj.gameObject.GetComponent( typeof(IEffect) );
-				effect.Run();
+				SpecialEffect effect = (SpecialEffect) obj.gameObject.GetComponent( typeof(SpecialEffect) );
+				effect.Run(1);
 				obj.transform.parent = col.transform;
 
 				//*****************************

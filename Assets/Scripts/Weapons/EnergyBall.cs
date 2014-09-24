@@ -20,18 +20,17 @@ public class EnergyBall : Projectile {
 	}
 
 	public void Explode(){
-		Collider[] hits = Physics.OverlapSphere (this.transform.position, this.size / 2.0f);
+		Collider[] hits = Physics.OverlapSphere (this.transform.position, this.size);
 		foreach (Collider col in hits) {
 			
 		
 						Actor act = col.gameObject.GetComponent<Actor> ();
-						if (act != null) {
+						if (act != null && act != this.owner) {
 			
 								//SPECIAL EFFECT
-								GameObject obj = (GameObject)GameObject.Instantiate (strikeEffect, col.collider.bounds.center, Quaternion.identity) as GameObject;
-								IEffect effect = (IEffect)obj.gameObject.GetComponent (typeof(IEffect));
-								effect.Run ();
-								obj.transform.parent = col.transform;
+								SpecialEffect actEffect = (SpecialEffect)GameObject.Instantiate (actorImpact, col.collider.bounds.center, Quaternion.identity) as SpecialEffect;
+								actEffect.Run (1);
+								actEffect.transform.parent = col.transform;
 			
 								//*****************************
 			
@@ -40,15 +39,18 @@ public class EnergyBall : Projectile {
 				act.GetComponent<ActorMotor>().Knockback(forceDir * size * 2);
 			}
 				}
+		SpecialEffect destEffect = (SpecialEffect)GameObject.Instantiate (destinationImpact, this.transform.position + Vector3.up * .1f, Quaternion.identity) as SpecialEffect;
+		destEffect.Run (size);
 		GameObject.Destroy (this.gameObject);
 	}
 
 	void OnTriggerEnter(Collider col){
-		
+		/*
 		if (active){
 			Actor act = col.gameObject.GetComponent<Actor>();
 			if (act != null){
-				
+				if (act != this.owner){
+
 				//SPECIAL EFFECT
 				GameObject obj = (GameObject)GameObject.Instantiate(strikeEffect, col.collider.bounds.center, Quaternion.identity) as GameObject;
 				IEffect effect = (IEffect) obj.gameObject.GetComponent( typeof(IEffect) );
@@ -60,9 +62,10 @@ public class EnergyBall : Projectile {
 				Vector3 forceDir = (act.transform.position - this.transform.position).normalized;
 				forceDir.y = 0;
 				act.GetComponent<ActorMotor>().Knockback(forceDir * size * 2);
+				}
 			}
-			
 		}
+		*/
 	}
 
 	IEnumerator Travel(Vector3 destination){

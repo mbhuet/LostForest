@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class SwordImpact : MonoBehaviour, IEffect{
+public class SwordImpact : SpecialEffect{
 
 	// Use this for initialization
 	void Start () {
@@ -12,7 +12,7 @@ public class SwordImpact : MonoBehaviour, IEffect{
 	void Update () {
 	}
 
-	public void Run(){
+	public override void Run(float size){
 		particleSystem.Emit (10);
 		GameObject.Destroy (this.gameObject, particleSystem.startLifetime);
 	}
