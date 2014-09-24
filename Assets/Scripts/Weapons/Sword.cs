@@ -1,7 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Sword : Weapon {
+public class Sword : HandWeapon {
+
+
 	MeleeWeaponTrail swipeTrail;
 	public string[] combos;
 	bool comboFlag;
@@ -48,27 +50,23 @@ public class Sword : Weapon {
 		buttonHeld = false;
 	}
 
-	void OnTriggerEnter(Collider col){
+	void OnTriggerEnter(Collider other){
 
 		if (active){
-			Actor act = col.gameObject.GetComponent<Actor>();
-			if (act != null){
-				if (act != this.owner){
+			if (other.GetComponent<Health>() && other.gameObject != this.owner.gameObject){
 
 				//SPECIAL EFFECT
-				GameObject obj = (GameObject)GameObject.Instantiate(strikeEffect, col.collider.bounds.center, Quaternion.identity) as GameObject;
+				GameObject obj = (GameObject)GameObject.Instantiate(strikeEffect, other.bounds.center, Quaternion.identity) as GameObject;
 				SpecialEffect effect = (SpecialEffect) obj.gameObject.GetComponent( typeof(SpecialEffect) );
 				effect.Run(1);
-				obj.transform.parent = col.transform;
+				obj.transform.parent = other.transform;
 
 				//*****************************
 
-				Vector3 forceDir = (act.transform.position - owner.transform.position).normalized;
+				Vector3 forceDir = (other.transform.position - owner.transform.position).normalized;
 				forceDir.y = 0;
-				act.GetComponent<ActorMotor>().Knockback(forceDir * 10);
-				}
+				other.GetComponent<Health>().Damage(damage, forceDir * force);
 			}
-
 		}
 	}
 

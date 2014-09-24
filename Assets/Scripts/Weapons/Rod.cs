@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Rod : Weapon {
+public class Rod : HandWeapon {
 	MeleeWeaponTrail swipeTrail;
 	bool comboFlag;
 	bool acceptCombo;
@@ -15,7 +15,7 @@ public class Rod : Weapon {
 	float postComboWindow = .1f;
 	
 	public GameObject strikeEffect;
-	public Projectile projectile;
+	public ProjectileWeapon projectile;
 	
 
 	void Awake(){
@@ -54,7 +54,7 @@ public class Rod : Weapon {
 			owner.animation.Play("RaiseRod");
 			yield return new WaitForSeconds (owner.animation["RaiseRod"].length);
 
-			Projectile curProjectile = (Projectile)GameObject.Instantiate(projectile, this.collider.bounds.center + Vector3.up * (1 + this.collider.bounds.extents.y ), Quaternion.identity) as Projectile;
+			ProjectileWeapon curProjectile = (ProjectileWeapon)GameObject.Instantiate(projectile, this.collider.bounds.center + Vector3.up * (1 + this.collider.bounds.extents.y ), Quaternion.identity) as ProjectileWeapon;
 			curProjectile.SetOwner(this.owner);
 			while (buttonHeld){
 				if (curProjectile.size < curProjectile.maxSize){

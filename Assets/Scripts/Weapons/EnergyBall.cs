@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class EnergyBall : Projectile {
+public class EnergyBall : ProjectileWeapon {
 
 	// Use this for initialization
 	void Awake () {
@@ -21,24 +21,23 @@ public class EnergyBall : Projectile {
 
 	public void Explode(){
 		Collider[] hits = Physics.OverlapSphere (this.transform.position, this.size);
-		foreach (Collider col in hits) {
+		foreach (Collider other in hits) {
+			Debug.Log (other.gameObject.name);
+
+			if (other.GetComponent<Health>() && other.gameObject != this.owner.gameObject){
 			
-		
-						Actor act = col.gameObject.GetComponent<Actor> ();
-						if (act != null && act != this.owner) {
-			
-								//SPECIAL EFFECT
-								SpecialEffect actEffect = (SpecialEffect)GameObject.Instantiate (actorImpact, col.collider.bounds.center, Quaternion.identity) as SpecialEffect;
-								actEffect.Run (1);
-								actEffect.transform.parent = col.transform;
-			
-								//*****************************
-			
-								Vector3 forceDir = (act.transform.position - this.transform.position).normalized;
+				//SPECIAL EFFECT
+				SpecialEffect actEffect = (SpecialEffect)GameObject.Instantiate (actorImpact, other.bounds.center, Quaternion.identity) as SpecialEffect;
+				actEffect.Run (1);
+				actEffect.transform.parent = other.transform;
+
+				//*****************************
+
+				Vector3 forceDir = (other.transform.position - this.transform.position).normalized;
 				forceDir.y = 0;
-				act.GetComponent<ActorMotor>().Knockback(forceDir * size * 2);
+				other.GetComponent<Health>().Damage(damage, forceDir * force * size);
 			}
-				}
+		}
 		SpecialEffect destEffect = (SpecialEffect)GameObject.Instantiate (destinationImpact, this.transform.position + Vector3.up * .1f, Quaternion.identity) as SpecialEffect;
 		destEffect.Run (size);
 		GameObject.Destroy (this.gameObject);

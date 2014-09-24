@@ -2,7 +2,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class Shield : Weapon {
+public class Shield : HandWeapon {
 	
 	// Use this for initialization
 	void Awake(){
