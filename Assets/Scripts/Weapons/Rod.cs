@@ -55,7 +55,7 @@ public class Rod : HandWeapon {
 			yield return new WaitForSeconds (owner.animation["RaiseRod"].length);
 
 			ProjectileWeapon curProjectile = (ProjectileWeapon)GameObject.Instantiate(projectile, this.collider.bounds.center + Vector3.up * (1 + this.collider.bounds.extents.y ), Quaternion.identity) as ProjectileWeapon;
-			curProjectile.SetOwner(this.owner);
+			curProjectile.owner = (this.owner);
 			while (buttonHeld){
 				if (curProjectile.size < curProjectile.maxSize){
 					curProjectile.size = Mathf.Lerp(curProjectile.size, curProjectile.maxSize, Time.deltaTime);
@@ -79,7 +79,7 @@ public class Rod : HandWeapon {
 			}
 		} while (comboFlag);
 		inAttack = false;
-		owner.animation.Play ("Idle");
+		owner.animation.Play (hand + "_Idle");
 
 	}
 	

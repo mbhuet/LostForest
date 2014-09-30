@@ -47,7 +47,7 @@ public class BipedWalkAnimation : MonoBehaviour {
 		origins = new GameObject[]{leftOrigin, rightOrigin};
 
 		footprints = new Vector3[]{leftOrigin.transform.position, rightOrigin.transform.position};
-		lastPosition = new Vector3[2];
+		lastPosition = new Vector3[]{leftOrigin.transform.position, rightOrigin.transform.position};
 		stickPositions = new Vector3[]{feet[0].transform.position, feet[1].transform.position};
 		stickRotations = new Quaternion[]{feet[0].transform.rotation, feet[1].transform.rotation};
 

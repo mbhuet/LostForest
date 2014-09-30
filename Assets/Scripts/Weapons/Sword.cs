@@ -52,14 +52,13 @@ public class Sword : HandWeapon {
 
 	void OnTriggerEnter(Collider other){
 
-		if (active){
+		if (active && !blocked){
 			if (other.GetComponent<Health>() && other.gameObject != this.owner.gameObject){
 
 				//SPECIAL EFFECT
-				GameObject obj = (GameObject)GameObject.Instantiate(strikeEffect, other.bounds.center, Quaternion.identity) as GameObject;
-				SpecialEffect effect = (SpecialEffect) obj.gameObject.GetComponent( typeof(SpecialEffect) );
-				effect.Run(1);
-				obj.transform.parent = other.transform;
+				SpecialEffect actEffect = (SpecialEffect)GameObject.Instantiate (actorImpact, other.bounds.center, Quaternion.identity) as SpecialEffect;
+				actEffect.Run(1);
+				actEffect.transform.parent = other.transform;
 
 				//*****************************
 
@@ -77,6 +76,8 @@ public class Sword : HandWeapon {
 	IEnumerator Swing (int hand){
 		inAttack = true;
 		comboIndex = -1;
+		blocked = false;
+
 		do {
 			comboFlag = false;
 			acceptCombo = false;
@@ -104,31 +105,7 @@ public class Sword : HandWeapon {
 			}
 		} while (comboFlag);
 		inAttack = false;
-		owner.animation.Play ("Idle");
-
-
-
-
-		/*
-		this.active = true;
-		swipeTrail.Emit = true;
-		owner.animation.Play (combos[comboIndex]);
-		while (this.active) {
-			yield return new WaitForSeconds((owner.animation[combos[comboIndex]].length));
-			if (comboFlag){
-				comboFlag = false;
-				comboIndex ++;
-				if (comboIndex>=combos.Length) comboIndex = 0;
-				owner.animation.Play (combos[comboIndex]);
-
-			}
-			else{
-				this.active = false;
-				swipeTrail.Emit = false;
-			}
-		}
-		owner.animation.Play ("Idle");
-		*/
+		owner.animation.Play (hand + "_Idle");
 	}
 
 

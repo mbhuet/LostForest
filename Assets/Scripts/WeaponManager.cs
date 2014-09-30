@@ -18,7 +18,7 @@ public class WeaponManager : MonoBehaviour{
 			if (index < hands.Length){
 				HandWeapon startWeapon = GameObject.Instantiate(w) as HandWeapon;
 				weaponList[index] = startWeapon;
-				startWeapon.SetOwner(this.gameObject.GetComponent<Actor>());
+				startWeapon.owner = (this.gameObject.GetComponent<Actor>());
 
 				SetWeapon(startWeapon, index);
 			}

@@ -5,15 +5,15 @@ public abstract class Weapon : Item {
 	public float damage;
 	public float force;
 
-	protected Actor owner;
+	public Actor owner;
 	protected bool active;
+	protected bool blocked;
 	public SpecialEffect actorImpact;
 
+	
 
-
-
-	public void SetOwner(Actor a){
-		this.owner = a;
+	public void Block(){
+		if (active) blocked = true;
 	}
 
 
