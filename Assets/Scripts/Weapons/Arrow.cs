@@ -35,7 +35,7 @@ public class Arrow : ProjectileWeapon {
 	public void OnTriggerEnter(Collider other){
 
 		if (active){
-			Debug.Log("arrow strike");
+//			Debug.Log("arrow strike");
 
 			if (other.GetComponent<Health>() && other.gameObject != this.owner.gameObject){
 				//Hit an actor

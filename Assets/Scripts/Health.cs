@@ -23,6 +23,10 @@ public class Health : MonoBehaviour {
 	}
 
 	public void Damage(float hit, Vector3 force){
+		//If the actor is stunned, don't apply more damage
+		//if (GetComponent<ActorMotor> () && GetComponent<ActorMotor> ().state == ActorMotor.MotorState.STUNNED)
+						//return;
+
 		Debug.Log ("Damage " + hit + " to " + this.gameObject.name);
 		health -= hit;
 

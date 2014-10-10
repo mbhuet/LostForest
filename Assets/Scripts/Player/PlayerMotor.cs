@@ -17,10 +17,10 @@ public class PlayerMotor : ActorMotor {
 	// Update is called once per frame
 	void Update () {
 		if (state == MotorState.WALKING) {
-						controller.Move (moveDir * moveSpeed * Time.deltaTime);
+						Move (moveDir * moveSpeed * Time.deltaTime);
 			
 				} else if (state == MotorState.STUNNED) {
-						controller.Move (knockbackDir * Time.deltaTime);
+						Move (knockbackDir * Time.deltaTime);
 				}
 
 	}
@@ -29,7 +29,7 @@ public class PlayerMotor : ActorMotor {
 
 		}
 	
-	public override void Move(Vector3 moveDir){
+	public override void SetMoveDirection(Vector3 moveDir){
 		this.moveDir = moveDir;
 	}
 
@@ -38,6 +38,13 @@ public class PlayerMotor : ActorMotor {
 						lookTarget.y = gameObject.transform.position.y;
 						gameObject.transform.LookAt (lookTarget);
 		}
+	}
+
+	protected override void Move(Vector3 movement){
+		if (controller != null)
+			controller.Move (movement);
+		else if (rvoController != null)
+			rvoController.Move (movement);
 	}
 
 	public override void Roll(){

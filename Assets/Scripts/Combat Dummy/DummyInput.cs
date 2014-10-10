@@ -4,44 +4,37 @@ using Pathfinding;
 
 public class DummyInput : ActorInput {
 	Seeker seeker;
-	Path path;
-	float repathRate = 1;
+	AIPath aiPath;
 
 
 	void Awake(){
 		base.Awake ();
 		seeker = this.GetComponent<Seeker> ();
+		aiPath = this.GetComponent<AIPath> ();
+
 
 	}
 
 	public void Start () {
-		UpdatePath ();
 	}
 	
 
 
 	void Update () {
-		
-		motor.Look (GameManager.Instance.player.transform.position);
 
+		motor.Look (GameManager.Instance.player.transform.position);
+		moveDir = aiPath.CalculateVelocity (aiPath.GetFeetPosition());
+		//Debug.Log ("moveDir " +moveDir);
 
 		if (forceMoveDirection)
-						moveDir = moveDirection;
-				else {
-		//				moveDir = (navigator.transform.position - this.transform.position);
-			moveDir.y = 0;
+				moveDir = moveDirection;
+
+		motor.SetMoveDirection(moveDir.normalized);
+
+		if (Vector3.Distance (this.transform.position, GameManager.Instance.player.transform.position) < 3) {
+						weapons.BeginUse (1);
 				}
 
-		motor.Move(moveDir.normalized);
-		
-
 	}
-
-	public void UpdatePath(){
-		path = seeker.StartPath (this.transform.position, GameManager.Instance.player.transform.position, OnPathComplete);
-		}
-
-	public void OnPathComplete (Path p) {
-		Debug.Log ("Yay, we got a path back. Did it have an error? "+p.error);
-	}
+	
 }

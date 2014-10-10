@@ -36,8 +36,7 @@ using Pathfinding.RVO;
 [RequireComponent(typeof(Seeker))]
 [AddComponentMenu("Pathfinding/AI/AIPath (generic)")]
 public class AIPath : MonoBehaviour {
-	
-	/** Determines how often it will search for new paths. 
+ 	/** Determines how often it will search for new paths. 
 	 * If you have fast moving targets or AIs, you might want to set it to a lower value.
 	 * The value is in seconds between path requests.
 	 */
@@ -326,16 +325,20 @@ public class AIPath : MonoBehaviour {
 
 		return tr.position;
 	}
-	
+
+
 	public virtual void Update () {
 		
 		if (!canMove) { return; }
 		
 		Vector3 dir = CalculateVelocity (GetFeetPosition());
-		
+		Debug.Log ("dir " +dir);
+
+		/* I want my ActorMotor to handle this biz
 		//Rotate towards targetDirection (filled in by CalculateVelocity)
 		RotateTowards (targetDirection);
 	
+
 		if (rvoController != null) {
 			rvoController.Move (dir);
 		} else
@@ -350,8 +353,12 @@ public class AIPath : MonoBehaviour {
 		} else {
 			transform.Translate (dir*Time.deltaTime, Space.World);
 		}
+		*/
+
+
 	}
-	
+
+
 	/** Point to where the AI is heading.
 	  * Filled in by #CalculateVelocity */
 	protected Vector3 targetPoint;
@@ -377,7 +384,7 @@ public class AIPath : MonoBehaviour {
 	 * /see targetDirection
 	 * /see currentWaypointIndex
 	 */
-	protected Vector3 CalculateVelocity (Vector3 currentPosition) {
+	public Vector3 CalculateVelocity (Vector3 currentPosition) {
 		if (path == null || path.vectorPath == null || path.vectorPath.Count == 0) return Vector3.zero; 
 		
 		List<Vector3> vPath = path.vectorPath;
@@ -412,8 +419,7 @@ public class AIPath : MonoBehaviour {
 		Vector3 targetPosition = CalculateTargetPoint (currentPosition,vPath[currentWaypointIndex-1] , vPath[currentWaypointIndex]);
 			//vPath[currentWaypointIndex] + Vector3.ClampMagnitude (dir,forwardLook);
 		
-		
-		
+
 		dir = targetPosition-currentPosition;
 		dir.y = 0;
 		float targetDist = dir.magnitude;
@@ -429,9 +435,10 @@ public class AIPath : MonoBehaviour {
 			//Send a move request, this ensures gravity is applied
 			return Vector3.zero;
 		}
-		
+
+		//THIS block is modifying the vector so it moves forward fastest
 		Vector3 forward = tr.forward;
-		float dot = Vector3.Dot (dir.normalized,forward);
+		float dot = 1;//Vector3.Dot (dir.normalized,forward);
 		float sp = speed * Mathf.Max (dot,minMoveScale) * slowdown;
 		
 #if ASTARDEBUG
@@ -441,11 +448,11 @@ public class AIPath : MonoBehaviour {
 		Debug.DrawRay (GetFeetPosition(),dir,Color.yellow);
 		Debug.DrawRay (GetFeetPosition(),forward*sp,Color.cyan);
 #endif
-		
 		if (Time.deltaTime	> 0) {
 			sp = Mathf.Clamp (sp,0,targetDist/(Time.deltaTime*2));
 		}
-		return forward*sp;
+		//ORIGINAL return forward*sp;
+		return dir*sp;
 	}
 	
 	/** Rotates in the specified direction.

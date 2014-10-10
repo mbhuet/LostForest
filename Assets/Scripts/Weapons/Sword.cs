@@ -11,8 +11,6 @@ public class Sword : HandWeapon {
 	bool inAttack = false;
 
 	int comboIndex = 0;
-	float holdTime = 0;
-	bool buttonHeld;
 
 	float endComboWindow = .1f;
 	float postComboWindow = .1f;
@@ -25,16 +23,12 @@ public class Sword : HandWeapon {
 		swipeTrail = this.GetComponent<MeleeWeaponTrail> ();
 	}
 
-	void Start (){
+	void Update(){
+
 	}
 	
-	// Update is called once per frame
-	void Update () {
-	}
 
 	public override void BeginUse(int hand){
-		holdTime = 0;
-		buttonHeld = true;
 
 		if (!inAttack) {
 			StartCoroutine ("Swing", hand);		
@@ -44,10 +38,8 @@ public class Sword : HandWeapon {
 
 	}
 	public override void HoldUse(int hand){
-		holdTime += Time.deltaTime;
 	}
 	public override void EndUse(int hand){
-		buttonHeld = false;
 	}
 
 	void OnTriggerEnter(Collider other){
@@ -76,9 +68,9 @@ public class Sword : HandWeapon {
 	IEnumerator Swing (int hand){
 		inAttack = true;
 		comboIndex = -1;
-		blocked = false;
 
 		do {
+			blocked = false;
 			comboFlag = false;
 			acceptCombo = false;
 			swipeTrail.Emit = true;
@@ -88,7 +80,7 @@ public class Sword : HandWeapon {
 			if (comboIndex > combos.Length-1) comboIndex = 0;
 
 
-			owner.animation.Play(combos[comboIndex]);
+			bool play = owner.animation.Play(combos[comboIndex]);
 			yield return new WaitForSeconds ((owner.animation [combos [comboIndex]].length - endComboWindow));
 
 			acceptCombo = true;
@@ -105,7 +97,7 @@ public class Sword : HandWeapon {
 			}
 		} while (comboFlag);
 		inAttack = false;
-		owner.animation.Play (hand + "_Idle");
+		owner.animation.Blend (hand + "_Idle");
 	}
 
 

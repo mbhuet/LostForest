@@ -32,7 +32,7 @@ public class LineCircle : MonoBehaviour
 		float begin = 	(360f * (1 - percentage)) / 2f;
 		float end = 	360f - (360f * (1 - percentage)) / 2f;
 
-		Debug.Log (begin + ", " + end);
+//		Debug.Log (begin + ", " + end);
 
 		float x;
 		float y = 0f;

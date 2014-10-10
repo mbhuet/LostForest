@@ -5,6 +5,7 @@ public class CameraFollow : MonoBehaviour {
 	public float height;
 	public float distance;
 	public bool useLerp;
+	public float lerpSpeed;
 	public GameObject target;
 	// Use this for initialization
 	void Start () {
@@ -16,7 +17,7 @@ public class CameraFollow : MonoBehaviour {
 	void Update () {
 		Vector3 goalPos = new Vector3 (target.transform.position.x, target.transform.position.y + height, target.transform.position.z - distance);
 		if (useLerp) {
-			transform.position = Vector3.Lerp(this.transform.position, goalPos, Time.deltaTime);
+			transform.position = Vector3.Lerp(this.transform.position, goalPos, lerpSpeed * Time.deltaTime);
 				} else {
 						transform.position = goalPos;
 				}

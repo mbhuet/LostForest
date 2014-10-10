@@ -19,7 +19,7 @@ public class PlayerInput : ActorInput {
 		if (moveDir.magnitude > 1)
 						moveDir.Normalize ();
 
-		motor.Move(moveDir);
+		motor.SetMoveDirection(moveDir);
 
 		for (int i = 0; i <2; i++){
 			if (Input.GetMouseButtonDown(i)){

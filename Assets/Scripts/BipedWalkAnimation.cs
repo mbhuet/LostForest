@@ -1,12 +1,15 @@
 using UnityEngine;
 using System.Collections;
+using Pathfinding;
+using Pathfinding.RVO;
 
 [RequireComponent(typeof(Actor))]
 public class BipedWalkAnimation : MonoBehaviour {
 
 	Actor actor;
 	CharacterController controller;
-	public bool useCharacterController;
+	RVOController rvoController;
+
 	public GameObject leftFoot;
 	public GameObject rightFoot;
 
@@ -39,7 +42,8 @@ public class BipedWalkAnimation : MonoBehaviour {
 	// Use this for initialization
 	void Awake () {
 		actor = this.gameObject.GetComponent<Actor>();
-		if (useCharacterController) controller = this.gameObject.GetComponent<CharacterController>();
+		controller = this.gameObject.GetComponent<CharacterController>();
+		rvoController = this.gameObject.GetComponent<RVOController>();
 
 		feet = new GameObject[]{leftFoot, rightFoot};
 
@@ -70,10 +74,13 @@ public class BipedWalkAnimation : MonoBehaviour {
 
 	
 	void Update(){
-		if (useCharacterController) {
+		if (controller != null) {
 			velocity = controller.velocity;	
-				} else
-						velocity = rigidbody.velocity;
+		} else if (rvoController != null) {
+			velocity = rvoController.velocity;	
+		} else if (rigidbody != null) {
+			velocity = rigidbody.velocity;
+		}
 		MoveFoot();
 	}
 

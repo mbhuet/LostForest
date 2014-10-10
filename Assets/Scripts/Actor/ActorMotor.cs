@@ -1,22 +1,29 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using Pathfinding;
+using Pathfinding.RVO;
 
 public abstract class ActorMotor : MonoBehaviour{
 	public enum MotorState {WALKING, STUNNED, ROLLING, FLYING};
-	protected MotorState state;
+	public MotorState state;
 	protected CharacterController controller;
-	
+	protected RVOController rvoController;
+
 	protected Vector3 moveDir;
 	public float moveSpeed;
 
 	protected Vector3 knockbackDir;
 	
-	public abstract void Move(Vector3 moveDir);
+	public abstract void SetMoveDirection(Vector3 moveDir);
+	protected abstract void Move(Vector3 movement);
 	public abstract void Look(Vector3 lookDir);
 	public abstract void Roll();
 
 	protected virtual void Awake(){
 		controller = this.GetComponent<CharacterController> ();
+		rvoController = this.GetComponent<RVOController> ();
+
 	}
 
 	public void ApplyKnockback(Vector3 force){
@@ -36,7 +43,11 @@ public abstract class ActorMotor : MonoBehaviour{
 		state = MotorState.WALKING;
 
 		//this is necessarye because CharControllers only calculate velocity when Move is called
-		controller.Move(Vector3.zero);
+		if (controller != null)
+			controller.Move(Vector3.zero);
+		else if (rvoController != null)
+			rvoController.Move(Vector3.zero);
+
 	}
 
 }

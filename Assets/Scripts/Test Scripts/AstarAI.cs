@@ -14,6 +14,6 @@ public class AstarAI : MonoBehaviour {
 	}
 	
 	public void OnPathComplete (Path p) {
-		Debug.Log ("Yay, we got a path back. Did it have an error? "+p.error);
+		Debug.Log ("Yay, we got a path back for " + this.name + ". Did it have an error? "+p.error);
 	}
 } 
