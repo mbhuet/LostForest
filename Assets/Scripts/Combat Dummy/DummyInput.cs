@@ -4,6 +4,9 @@ using Pathfinding;
 
 public class DummyInput : ActorInput {
 	Seeker seeker;
+	Path path;
+	float repathRate = 1;
+
 
 	void Awake(){
 		base.Awake ();
@@ -11,11 +14,11 @@ public class DummyInput : ActorInput {
 
 	}
 
-	void Start(){
-//w		seeker.StartPath (transform.position,Vector3.zero, OnPathComplete);
-
-		
+	public void Start () {
+		UpdatePath ();
 	}
+	
+
 
 	void Update () {
 		
@@ -34,7 +37,11 @@ public class DummyInput : ActorInput {
 
 	}
 
+	public void UpdatePath(){
+		path = seeker.StartPath (this.transform.position, GameManager.Instance.player.transform.position, OnPathComplete);
+		}
+
 	public void OnPathComplete (Path p) {
-		//Debug.Log ("Yay, we got a path back. Did it have an error? "+p.error);
+		Debug.Log ("Yay, we got a path back. Did it have an error? "+p.error);
 	}
 }

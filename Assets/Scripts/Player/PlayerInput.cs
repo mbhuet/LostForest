@@ -15,7 +15,11 @@ public class PlayerInput : ActorInput {
 						moveDir = moveDirection;
 		else
 		moveDir = new Vector3(Input.GetAxis ("Horizontal"), 0, Input.GetAxis ("Vertical"));
-		motor.Move(moveDir.normalized);
+		//We don't want diagonal movement to be faster than up-down or left-right
+		if (moveDir.magnitude > 1)
+						moveDir.Normalize ();
+
+		motor.Move(moveDir);
 
 		for (int i = 0; i <2; i++){
 			if (Input.GetMouseButtonDown(i)){

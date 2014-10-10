@@ -5,6 +5,8 @@ public class GameManager : MonoBehaviour {
 	public static GameManager Instance;
 	public Vector3 cursorWorldPosition;
 
+	public GameObject cursorTarget;
+
 	public GameObject player;
 
 	// Use this for initialization
@@ -27,6 +29,8 @@ public class GameManager : MonoBehaviour {
 			//			Debug.Log("Hit Ground");
 			cursorWorldPosition = hit.point;
 		}
+
+		cursorTarget.transform.position = cursorWorldPosition + Vector3.up * .1f;
 	}
 
 	IEnumerator HitTimeSlow(float lowTimeScale){

@@ -9,6 +9,8 @@ public abstract class Weapon : Item {
 	protected bool active;
 	protected bool blocked;
 	public SpecialEffect actorImpact;
+	public SpecialEffect blockedImpact;
+
 
 	
 

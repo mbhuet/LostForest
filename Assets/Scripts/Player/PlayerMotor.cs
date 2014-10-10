@@ -30,7 +30,7 @@ public class PlayerMotor : ActorMotor {
 		}
 	
 	public override void Move(Vector3 moveDir){
-		this.moveDir = moveDir.normalized;
+		this.moveDir = moveDir;
 	}
 
 	public override void Look(Vector3 lookTarget){
