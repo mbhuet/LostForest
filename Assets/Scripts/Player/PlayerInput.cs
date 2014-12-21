@@ -1,22 +1,9 @@
 using UnityEngine;
 using System.Collections;
 
-[RequireComponent (typeof(ActorMotor))]
-[RequireComponent (typeof(WeaponManager))]
-public class PlayerInput : MonoBehaviour, IActorInput {
-	private Vector3 moveDir;
-	private Vector3 lookTarget;
-	private ActorMotor motor;
-	private WeaponManager weapons;
 
-	public bool forceMoveDirection;
-	public Vector3 moveDirection;
 
-	// Use this for initialization
-	void Awake () {
-		motor = GetComponent<ActorMotor>();
-		weapons = GetComponent<WeaponManager>();
-	}
+public class PlayerInput : ActorInput {
 
 
 	void Update () {
@@ -30,7 +17,13 @@ public class PlayerInput : MonoBehaviour, IActorInput {
 						moveDir = moveDirection;
 		else
 		moveDir = new Vector3(Input.GetAxis ("Horizontal"), 0, Input.GetAxis ("Vertical"));
-		motor.Move(moveDir.normalized);
+
+		//We don't want diagonal movement to be faster than up-down or left-right
+		if (moveDir.magnitude > 1)
+						moveDir.Normalize ();
+
+		motor.SetMoveDirection(moveDir);
+
 
 		for (int i = 0; i <2; i++){
 			if (Input.GetMouseButtonDown(i)){

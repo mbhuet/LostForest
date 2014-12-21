@@ -6,6 +6,7 @@ public class PlayerMotor : ActorMotor {
 	public float rollSpeed;
 	public float rollTime;
 
+
 	CharacterController controller;
 
 	void Awake(){
@@ -14,11 +15,21 @@ public class PlayerMotor : ActorMotor {
 	}
 	// Use this for initialization
 	void Start () {
+
+		walkAnim = this.GetComponent<BipedWalkAnimation> ();
+
 		state = MotorState.WALKING;
 	}
 	
 	// Update is called once per frame
 	void Update () {
+
+		if (state == MotorState.WALKING) {
+						Move (moveDir * moveSpeed * Time.deltaTime);
+			
+				} else if (state == MotorState.STUNNED) {
+						Move (knockbackDir * Time.deltaTime);
+				}
 
 	}
 
@@ -26,20 +37,23 @@ public class PlayerMotor : ActorMotor {
 
 		}
 	
-	public override void Move(Vector3 moveDir){
-		this.moveDir = moveDir.normalized;
-		if (state == MotorState.WALKING) {
-			controller.Move(moveDir * moveSpeed * Time.deltaTime );
-			//controller.SimpleMove(moveDir * moveSpeed * Time.deltaTime);
-			//controller.SimpleMove(Vector3.up);
-		}
+
+	public override void SetMoveDirection(Vector3 moveDir){
+		this.moveDir = moveDir;
 	}
 
 	public override void Look(Vector3 lookTarget){
 		if (state == MotorState.WALKING) {
 						lookTarget.y = gameObject.transform.position.y;
 						gameObject.transform.LookAt (lookTarget);
-				}
+		}
+	}
+
+	protected override void Move(Vector3 movement){
+		if (controller != null)
+			controller.Move (movement);
+		else if (rvoController != null)
+			rvoController.Move (movement);
 	}
 
 	public override void Roll(){
@@ -49,6 +63,8 @@ public class PlayerMotor : ActorMotor {
 	}
 
 	IEnumerator RollRoutine(){
+		collider.enabled = false;
+
 		state = MotorState.ROLLING;
 		walkAnim.enabled = false;
 
@@ -65,5 +81,8 @@ public class PlayerMotor : ActorMotor {
 		this.gameObject.transform.rotation = Quaternion.identity;
 		state = MotorState.WALKING;
 		walkAnim.enabled = true;
+
+		collider.enabled = true;
+
 	}
 }

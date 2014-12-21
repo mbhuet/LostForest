@@ -6,19 +6,19 @@ using System.Collections.Generic;
 public class WeaponManager : MonoBehaviour{
 	public GameObject[] hands;
 
-	Weapon[] weaponList;
-	public List<Weapon> startingWeapons;
+	HandWeapon[] weaponList;
+	public List<HandWeapon> startingWeapons;
 
 
 	void Awake(){
-		weaponList = new Weapon[hands.Length];
+		weaponList = new HandWeapon[hands.Length];
 		//all starting weapons need to know who onwns them
 		int index = 0;
-		foreach (Weapon w in startingWeapons){
+		foreach (HandWeapon w in startingWeapons){
 			if (index < hands.Length){
-				Weapon startWeapon = GameObject.Instantiate(w) as Weapon;
+				HandWeapon startWeapon = GameObject.Instantiate(w) as HandWeapon;
 				weaponList[index] = startWeapon;
-				startWeapon.setOwner(this.gameObject.GetComponent<Actor>());
+				startWeapon.owner = (this.gameObject.GetComponent<Actor>());
 
 				SetWeapon(startWeapon, index);
 			}
@@ -28,23 +28,23 @@ public class WeaponManager : MonoBehaviour{
 	}
 
 	public void BeginUse(int hand){
-		if (hand < weaponList.Length)
+		if (hand < weaponList.Length && weaponList[hand] != null)
 		weaponList[hand].BeginUse(hand);
 		else
-			Debug.LogError("There is no weapon " + hand + " on " + this.gameObject.name);
+			Debug.Log("There is no weapon " + hand + " on " + this.gameObject.name);
 	}
 
 	public void HoldUse(int hand){
-		if (hand < weaponList.Length)
+		if (hand < weaponList.Length && weaponList[hand] != null)
 		weaponList[hand].HoldUse(hand);
 	}
 
 	public void EndUse(int hand){
-		if (hand < weaponList.Length)
+		if (hand < weaponList.Length && weaponList[hand] != null)
 		weaponList[hand].EndUse(hand);
 	}
 
-	public void SetWeapon(Weapon weapon, int hand){
+	public void SetWeapon(HandWeapon weapon, int hand){
 		if (hand > hands.Length) {
 			Debug.LogError(this.gameObject.name + " does not have hand " + hand + " set. Cannot equip Weapon.");		
 		}

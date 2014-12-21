@@ -1,7 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Sword : Weapon {
+public class Sword : HandWeapon {
+
+
 	MeleeWeaponTrail swipeTrail;
 	public string[] combos;
 	bool comboFlag;
@@ -9,8 +11,6 @@ public class Sword : Weapon {
 	bool inAttack = false;
 
 	int comboIndex = 0;
-	float holdTime = 0;
-	bool buttonHeld;
 
 	float endComboWindow = .1f;
 	float postComboWindow = .1f;
@@ -23,16 +23,12 @@ public class Sword : Weapon {
 		swipeTrail = this.GetComponent<MeleeWeaponTrail> ();
 	}
 
-	void Start (){
+	void Update(){
+
 	}
 	
-	// Update is called once per frame
-	void Update () {
-	}
 
 	public override void BeginUse(int hand){
-		holdTime = 0;
-		buttonHeld = true;
 
 		if (!inAttack) {
 			StartCoroutine ("Swing", hand);		
@@ -42,32 +38,28 @@ public class Sword : Weapon {
 
 	}
 	public override void HoldUse(int hand){
-		holdTime += Time.deltaTime;
 	}
 	public override void EndUse(int hand){
-		buttonHeld = false;
 	}
 
-	void OnTriggerEnter(Collider col){
-		//Debug.Log (col.gameObject.name);
-		if (active){
-			Actor act = col.gameObject.GetComponent<Actor>();
-			if (act != null){
-				if (act != this.owner){
-					Debug.Log(act.name);
+
+	void OnTriggerEnter(Collider other){
+
+		if (active && !blocked){
+			if (other.GetComponent<Health>() && other.gameObject != this.owner.gameObject){
+
 				//SPECIAL EFFECT
-				GameObject obj = (GameObject)GameObject.Instantiate(strikeEffect, col.collider.bounds.center, Quaternion.identity) as GameObject;
-				IEffect effect = (IEffect) obj.gameObject.GetComponent( typeof(IEffect) );
-				effect.Run();
-				obj.transform.parent = col.transform;
+				SpecialEffect actEffect = (SpecialEffect)GameObject.Instantiate (actorImpact, other.bounds.center, Quaternion.identity) as SpecialEffect;
+				actEffect.Run(1);
+				actEffect.transform.parent = other.transform;
 
 				//*****************************
 
-				Vector3 forceDir = (act.transform.position - owner.transform.position).normalized;
-				act.rigidbody.AddForce(forceDir*100);
-				}
-			}
 
+				Vector3 forceDir = (other.transform.position - owner.transform.position).normalized;
+				forceDir.y = 0;
+				other.GetComponent<Health>().Damage(damage, forceDir * force);
+			}
 		}
 	}
 
@@ -78,7 +70,9 @@ public class Sword : Weapon {
 	IEnumerator Swing (int hand){
 		inAttack = true;
 		comboIndex = -1;
+
 		do {
+			blocked = false;
 			comboFlag = false;
 			acceptCombo = false;
 			swipeTrail.Emit = true;
@@ -88,7 +82,7 @@ public class Sword : Weapon {
 			if (comboIndex > combos.Length-1) comboIndex = 0;
 
 
-			owner.animation.Play(combos[comboIndex]);
+			bool play = owner.animation.Play(combos[comboIndex]);
 			yield return new WaitForSeconds ((owner.animation [combos [comboIndex]].length - endComboWindow));
 
 			acceptCombo = true;
@@ -105,31 +99,7 @@ public class Sword : Weapon {
 			}
 		} while (comboFlag);
 		inAttack = false;
-		owner.animation.Play ("Idle");
-
-
-
-
-		/*
-		this.active = true;
-		swipeTrail.Emit = true;
-		owner.animation.Play (combos[comboIndex]);
-		while (this.active) {
-			yield return new WaitForSeconds((owner.animation[combos[comboIndex]].length));
-			if (comboFlag){
-				comboFlag = false;
-				comboIndex ++;
-				if (comboIndex>=combos.Length) comboIndex = 0;
-				owner.animation.Play (combos[comboIndex]);
-
-			}
-			else{
-				this.active = false;
-				swipeTrail.Emit = false;
-			}
-		}
-		owner.animation.Play ("Idle");
-		*/
+		owner.animation.Blend (hand + "_Idle");
 	}
 
 

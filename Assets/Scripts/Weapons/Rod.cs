@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Rod : Weapon {
+public class Rod : HandWeapon {
 	MeleeWeaponTrail swipeTrail;
 	bool comboFlag;
 	bool acceptCombo;
@@ -15,7 +15,7 @@ public class Rod : Weapon {
 	float postComboWindow = .1f;
 	
 	public GameObject strikeEffect;
-	public Projectile projectile;
+	public ProjectileWeapon projectile;
 	
 
 	void Awake(){
@@ -54,9 +54,8 @@ public class Rod : Weapon {
 			owner.animation.Play("RaiseRod");
 			yield return new WaitForSeconds (owner.animation["RaiseRod"].length);
 
-			Projectile curProjectile = (Projectile)GameObject.Instantiate(projectile, this.collider.bounds.center + Vector3.up * (1 + this.collider.bounds.extents.y ), Quaternion.identity) as Projectile;
-			//curProjectile.transform.parent = this.transform;
-
+			ProjectileWeapon curProjectile = (ProjectileWeapon)GameObject.Instantiate(projectile, this.collider.bounds.center + Vector3.up * (1 + this.collider.bounds.extents.y ), Quaternion.identity) as ProjectileWeapon;
+			curProjectile.owner = (this.owner);
 			while (buttonHeld){
 				if (curProjectile.size < curProjectile.maxSize){
 					curProjectile.size = Mathf.Lerp(curProjectile.size, curProjectile.maxSize, Time.deltaTime);
@@ -80,31 +79,8 @@ public class Rod : Weapon {
 			}
 		} while (comboFlag);
 		inAttack = false;
-		owner.animation.Play ("Idle");
-		
-		
-		
-		
-		/*
-		this.active = true;
-		swipeTrail.Emit = true;
-		owner.animation.Play (combos[comboIndex]);
-		while (this.active) {
-			yield return new WaitForSeconds((owner.animation[combos[comboIndex]].length));
-			if (comboFlag){
-				comboFlag = false;
-				comboIndex ++;
-				if (comboIndex>=combos.Length) comboIndex = 0;
-				owner.animation.Play (combos[comboIndex]);
+		owner.animation.Play (hand + "_Idle");
 
-			}
-			else{
-				this.active = false;
-				swipeTrail.Emit = false;
-			}
-		}
-		owner.animation.Play ("Idle");
-		*/
 	}
 	
 	
