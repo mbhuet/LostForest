@@ -84,7 +84,6 @@ public class Seeker : MonoBehaviour {
 	private GraphNode endHint;
 	
 	private OnPathDelegate onPathDelegate;
-	private OnPathDelegate onPartialPathDelegate;
 
 	/** Temporary callback only called for the current path. This value is set by the StartPath functions */
 	private OnPathDelegate tmpPathCallback;
@@ -92,17 +91,11 @@ public class Seeker : MonoBehaviour {
 	/** The path ID of the last path queried */
 	protected uint lastPathID = 0;
 	
-#if PhotonImplementation
-	public Seeker () {
-		Awake ();
-	}
-#endif
 	
 	/** Initializes a few variables
 	 */
 	public void Awake () {
 		onPathDelegate = OnPathComplete;
-		onPartialPathDelegate = OnPartialPathComplete;
 		
 		startEndModifier.Awake (this);
 	}
@@ -323,17 +316,6 @@ public class Seeker : MonoBehaviour {
 		AstarProfiler.EndProfile ();
 	}
 	
-	/** Called for each path in a MultiTargetPath. Only post processes the path, does not return it.
-	  * \astarpro */
-	public void OnPartialPathComplete (Path p) {
-		OnPathComplete (p,true,false);
-	}
-	
-	/** Called once for a MultiTargetPath. Only returns the path, does not post process.
-	  * \astarpro */
-	public void OnMultiPathComplete (Path p) {
-		OnPathComplete (p,false,true);
-	}
 	
 	/*public void OnEnable () {
 		//AstarPath.OnGraphsUpdated += CheckPathValidity;
@@ -431,12 +413,6 @@ public class Seeker : MonoBehaviour {
 		p.enabledTags = traversableTags.tagsChange;
 		p.tagPenalties = tagPenalties;
 		
-#if !AstarFree && FALSE
-		//In case a multi target path has been specified, call special logic
-		if (p.GetType () == typeof (MultiTargetPath)) {
-			return StartMultiTargetPath (p as MultiTargetPath,callback);
-		}
-#endif
 		//Cancel a previously requested path is it has not been processed yet and also make sure that it has not been recycled and used somewhere else
 		if (path != null && path.GetState() <= PathState.Processing && lastPathID == path.pathID) {
 			path.Error();
@@ -450,7 +426,6 @@ public class Seeker : MonoBehaviour {
 		
 		path = p;
 		path.callback += onPathDelegate;
-		path.nnConstraint.graphMask = graphMask;
 		
 		tmpPathCallback = callback;
 		
@@ -482,92 +457,6 @@ public class Seeker : MonoBehaviour {
 		return path;
 	}
 	
-	/** Starts a Multi Target Path from one start point to multiple end points. A Multi Target Path will search for all the end points in one search and will return all paths if \a pathsForAll is true, or only the shortest one if \a pathsForAll is false.\n
-	 * \param start			The start point of the path
-	 * \param endPoints		The end points of the path
-	 * \param pathsForAll	Indicates whether or not a path to all end points should be searched for or only to the closest one
-	 * \param callback		The function to call when the path has been calculated
-	 * \param graphMask		Mask used to specify which graphs should be searched for close nodes. See Pathfinding.NNConstraint.graphMask. \astarproParam
-	 * 
-	 * \a callback and #pathCallback will be called when the path has completed. \a Callback will not be called if the path is canceled (e.g when a new path is requested before the previous one has completed)
-	 * \astarpro 
-	 * \see Pathfinding.MultiTargetPath
-	 * \see \ref MultiTargetPathExample.cs "Example of how to use multi-target-paths"
-	 */
-	public MultiTargetPath StartMultiTargetPath (Vector3 start, Vector3[] endPoints, bool pathsForAll, OnPathDelegate callback = null, int graphMask = -1) {
-		MultiTargetPath p = MultiTargetPath.Construct (start, endPoints, null, null);
-		p.pathsForAll = pathsForAll;
-		return StartMultiTargetPath (p, callback, graphMask);
-	}
-	
-	/** Starts a Multi Target Path from multiple start points to a single target point. A Multi Target Path will search from all start points to the target point in one search and will return all paths if \a pathsForAll is true, or only the shortest one if \a pathsForAll is false.\n
-	 * \param startPoints	The start points of the path
-	 * \param end			The end point of the path
-	 * \param pathsForAll	Indicates whether or not a path from all start points should be searched for or only to the closest one
-	 * \param callback		The function to call when the path has been calculated
-	 * \param graphMask		Mask used to specify which graphs should be searched for close nodes. See Pathfinding.NNConstraint.graphMask. \astarproParam
-	 * 
-	 * \a callback and #pathCallback will be called when the path has completed. \a Callback will not be called if the path is canceled (e.g when a new path is requested before the previous one has completed)
-	 * \astarpro 
-	 * \see Pathfinding.MultiTargetPath
-	 * \see \ref MultiTargetPathExample.cs "Example of how to use multi-target-paths"
-	 */
-	public MultiTargetPath StartMultiTargetPath (Vector3[] startPoints, Vector3 end, bool pathsForAll, OnPathDelegate callback = null, int graphMask = -1) {
-		MultiTargetPath p = MultiTargetPath.Construct (startPoints, end, null, null);
-		p.pathsForAll = pathsForAll;
-		return StartMultiTargetPath (p, callback, graphMask);
-	}
-	
-	/** Starts a Multi Target Path. Takes a MultiTargetPath and wires everything up for it to send callbacks to the seeker for post-processing.\n
-	 * \param p				The path to start calculating
-	 * \param callback		The function to call when the path has been calculated
-	 * \param graphMask	Mask used to specify which graphs should be searched for close nodes. See Pathfinding.NNConstraint.graphMask. \astarproParam
-	 * 
-	 * \a callback and #pathCallback will be called when the path has completed. \a Callback will not be called if the path is canceled (e.g when a new path is requested before the previous one has completed)
-	 * \astarpro
-	 * \see Pathfinding.MultiTargetPath
-	 * \see \ref MultiTargetPathExample.cs "Example of how to use multi-target-paths"
-	 */
-	public MultiTargetPath StartMultiTargetPath (MultiTargetPath p, OnPathDelegate callback = null, int graphMask = -1) {
-			
-		//Cancel a previously requested path is it has not been processed yet and also make sure that it has not been recycled and used somewhere else
-		if (path != null && path.GetState () <= PathState.Processing && lastPathID == path.pathID) {
-			path.ForceLogError ("Canceled path because a new one was requested");
-			//No callback should be sent for the canceled path
-		}
-		
-		OnPathDelegate[] callbacks = new OnPathDelegate[p.targetPoints.Length];
-		for (int i=0;i<callbacks.Length;i++) {
-			callbacks[i] = onPartialPathDelegate;
-		}
-		
-		p.callbacks = callbacks;
-		p.callback += OnMultiPathComplete;
-		p.nnConstraint.graphMask = graphMask;
-		
-		path = p;
-		
-		tmpPathCallback = callback;
-		
-		//Save the path id so we can make sure that if we cancel a path (see above) it should not have been recycled yet.
-		lastPathID = path.pathID;
-		
-		//Delay the path call by one frame if it was sent the same frame as the previous call
-		/*if (lastPathCall == Time.frameCount) {
-			StartCoroutine (DelayPathStart (path));
-			return p;
-		}
-		
-		lastPathCall = Time.frameCount;*/
-		
-		//Pre process the path
-		RunModifiers (ModifierPass.PreProcess, path);
-		
-		//Send the request to the pathfinder
-		AstarPath.StartPath (path);
-		
-		return p;
-	}
 	
 	public IEnumerator DelayPathStart (Path p) {
 		yield return null;
@@ -578,7 +467,6 @@ public class Seeker : MonoBehaviour {
 		AstarPath.StartPath (p);
 	}
 	
-#if !PhotonImplementation
 	public void OnDrawGizmos () {
 		if (lastCompletedNodePath == null || !drawGizmos) {
 			return;
@@ -602,7 +490,6 @@ public class Seeker : MonoBehaviour {
 			}
 		}
 	}
-#endif
 	
 }
 

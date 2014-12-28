@@ -24,7 +24,6 @@ public class PlayerInput : ActorInput {
 
 		motor.SetMoveDirection(moveDir);
 
-
 		for (int i = 0; i <2; i++){
 			if (Input.GetMouseButtonDown(i)){
 				weapons.BeginUse(i);

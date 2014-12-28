@@ -95,10 +95,6 @@ namespace Pathfinding {
 		/** if #lockToY is enabled lock all points to this value */
 		public float lockToYValue = 0;
 		
-	#if ConfigureTagsAsMultiple
-		/** Sets the value of the changed tags. This is a bitmask */
-		public TagMask tags = new TagMask ();
-	#else
 		[HideInInspector]
 		/** If enabled, set all nodes' tags to #setTag */
 		public bool modifyTag = false;
@@ -110,7 +106,6 @@ namespace Pathfinding {
 		/** Private cached inversion of #setTag.
 		 * Used for InvertSettings() */
 		private int setTagInvert = 0;
-	#endif
 		
 		/** Has apply been called yet.
 		 * Used to prevent applying twice when both applyOnScan and applyOnStart are enabled */
@@ -275,12 +270,8 @@ namespace Pathfinding {
 			guo.updateErosion = updateErosion;
 			guo.resetPenaltyOnPhysics = resetPenaltyOnPhysics;
 			
-	#if ConfigureTagsAsMultiple
-			guo.tags = tags;
-	#else
 			guo.modifyTag = modifyTag;
 			guo.setTag = setTag;
-	#endif
 			
 			AstarPath.active.UpdateGraphs (guo);
 		}

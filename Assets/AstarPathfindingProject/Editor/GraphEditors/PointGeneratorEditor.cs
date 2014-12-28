@@ -84,19 +84,6 @@ namespace Pathfinding {
 	
 			//editor.GUILayoutx.EndFadeArea ();
 
-			graph.optimizeForSparseGraph = EditorGUILayout.Toggle (new GUIContent ("Optimize For Sparse Graph","Check online documentation for more information."),graph.optimizeForSparseGraph);
-	
-			//fade = editor.GUILayoutx.BeginFadeArea (graph.optimizeForSparseGraph,"optimizeForSparseGraph");
-			//if ( fade.Show () ) {
-			if ( graph.optimizeForSparseGraph ) {
-				EditorGUI.indentLevel++;
-				
-				graph.optimizeFor2D = EditorGUILayout.Toggle (new GUIContent ("Optimize For 2D","Check online documentation for more information."),graph.optimizeFor2D);
-	
-				EditorGUI.indentLevel--;
-			}
-			
-			//editor.GUILayoutx.EndFadeArea ();
 		}
 		
 		public override void OnDrawGizmos () {

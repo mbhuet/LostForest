@@ -3,13 +3,9 @@
 using System;
 using UnityEngine;
 using Pathfinding.Serialization.JsonFx;
-#if NETFX_CORE
-using System.Reflection;
-#endif
 
 using System.Collections.Generic;
 
-#if !ASTAR_NO_JSON
 
 namespace Pathfinding.Serialization
 {
@@ -17,11 +13,7 @@ namespace Pathfinding.Serialization
 	public class UnityObjectConverter : JsonConverter {
 
 		public override bool CanConvert (Type type) {
-#if NETFX_CORE
-			return typeof(UnityEngine.Object).GetTypeInfo().IsAssignableFrom (type.GetTypeInfo());
-#else
 			return typeof(UnityEngine.Object).IsAssignableFrom (type);
-#endif
 		}
 		
 		public override object ReadJson ( Type objectType, Dictionary<string,object> values) {
@@ -268,5 +260,3 @@ namespace Pathfinding.Serialization
         }
     }
 }
-
-#endif

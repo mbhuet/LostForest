@@ -212,12 +212,6 @@ namespace Pathfinding {
 			
 			AstarProfiler.EndProfile ();
 			
-#if ASTARDEBUG
-			if (startNode != null)
-				Debug.DrawLine ((Vector3)startNode.position,startPoint,Color.blue);
-			if (endNode != null)
-				Debug.DrawLine ((Vector3)endNode.position,endPoint,Color.blue);
-#endif
 			
 			if (startNode == null && (hasEndPoint && endNode == null)) {
 				Error ();
@@ -238,10 +232,6 @@ namespace Pathfinding {
 			}
 			
 			if (!startNode.Walkable) {
-#if ASTARDEBUG
-				Debug.DrawRay (startPoint,Vector3.up,Color.red);
-				Debug.DrawLine (startPoint,(Vector3)startNode.position,Color.red);
-#endif
 				Error ();
 				LogError ("The node closest to the start point is not walkable");
 				return;
@@ -417,11 +407,6 @@ while the end has not been found and no error has ocurred
 		
 		/** Resets End Node Costs. Costs are updated on the end node at the start of the search to better reflect the end point passed to the path, the previous ones are saved in #endNodeCosts and are reset in this function which is called after the path search is complete */
 		public void ResetCosts (Path p) {
-#if FALSE
-			if (!hasEndPoint) return;
-			
-			endNode.ResetCosts (endNodeCosts);
-#endif
 		}
 		
 		/* String builder used for all debug logging */

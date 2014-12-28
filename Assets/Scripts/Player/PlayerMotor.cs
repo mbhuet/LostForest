@@ -7,10 +7,8 @@ public class PlayerMotor : ActorMotor {
 	public float rollTime;
 
 
-	CharacterController controller;
-
 	void Awake(){
-		controller = this.GetComponent<CharacterController> ();
+		base.Awake ();
 		walkAnim = this.GetComponent<BipedWalkAnimation> ();
 	}
 	// Use this for initialization
@@ -52,8 +50,8 @@ public class PlayerMotor : ActorMotor {
 	protected override void Move(Vector3 movement){
 		if (controller != null)
 			controller.Move (movement);
-		else if (rvoController != null)
-			rvoController.Move (movement);
+//		else if (rvoController != null)
+//			rvoController.Move (movement);
 	}
 
 	public override void Roll(){

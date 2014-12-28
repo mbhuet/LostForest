@@ -287,11 +287,6 @@ namespace Pathfinding {
 				subdivided[(path.Count-2)*(int)Mathf.Pow(2,iteration+1)+2-1] = subdivided2[currentPathLength-1];
 			}
 			
-	#if ASTARDEBUG
-			for (int i=0;i<subdivided.Count-1;i++) {
-				Debug.DrawLine (subdivided[i],subdivided[i+1],Color.red);
-			}
-	#endif
 			
 			ListPool<Vector3>.Release (subdivided2);
 			

@@ -94,17 +94,12 @@ public class GraphUpdateSceneEditor : Editor {
 				"You can set an initial penalty on graphs (see their settings) and then lower them like this to get regions which are easier to traverse.", MessageType.Warning);
 		}
 		
-#if ConfigureTagsAsMultiple
-		script.modifyTag = EditorGUILayout.Toggle (new GUIContent ("Modify Tags","Should the tags of the nodes be modified"),script.modifyTag);
-		EditorGUILayoutx.TagsMaskField (new GUIContent ("Tags Change","Which tags to change the value of. The values the tags will gain can be set below"), new GUIContent ("Tags Set","What to set the tag to if it is going to be changed"),ref script.tags);
-#else
 		script.modifyTag = EditorGUILayout.Toggle (new GUIContent ("Modify Tags","Should the tags of the nodes be modified"),script.modifyTag);
 		if (script.modifyTag) {
 			EditorGUI.indentLevel++;
 			script.setTag = EditorGUILayout.Popup ("Set Tag",script.setTag,AstarPath.FindTagNames ());
 			EditorGUI.indentLevel--;
 		}
-#endif
 
 		if (GUILayout.Button ("Tags can be used to restrict which units can walk on what ground. Click here for more info","HelpBox")) {
 			Application.OpenURL (AstarPathEditor.GetURL ("tags"));

@@ -63,7 +63,6 @@ AstarPath.active.Scan();
 \nosubgrouping
 	 */
 	public class GridGraph : NavGraph, IUpdatableGraph
-	,IRaycastableGraph
 	{
 		
 		/** This function will be called when this graph is destroyed */
@@ -101,7 +100,28 @@ AstarPath.active.Scan();
 		
 		[JsonMember]
 		public float aspectRatio = 1F; /**< Scaling of the graph along the X axis. This should be used if you want different scales on the X and Y axis of the grid */
-		//public Vector3 offset;
+
+		/** Angle to use for the isometric projection.
+		 * If you are making a 2D isometric game, you may want to use this parameter to adjust the layout of the graph to match your game.
+		 * This will essentially scale the graph along one of its diagonals to produce something like this:
+		 * 
+		 * A perspective view of an isometric graph.
+		 * \shadowimage{isometric/isometric_perspective.png}
+		 * 
+		 * A top down view of an isometric graph. Note that the graph is entirely 2D, there is no perspective in this image.
+		 * \shadowimage{isometric/isometric_top.png}
+		 * 
+		 * Usually the angle that you want to use is either 30 degrees (alternatively 90-30 = 60 degrees) or atan(1/sqrt(2)) which is approximately 35.264 degrees (alternatively 90 - 35.264 = 54.736 degrees).
+		 * You might also want to rotate the graph plus or minus 45 degrees around the Y axis to get the oritientation required for your game.
+		 * 
+		 * You can read more about it on the wikipedia page linked below.
+		 * 
+		 * \see http://en.wikipedia.org/wiki/Isometric_projection
+		 * \see rotation
+		 */
+		[JsonMember]
+		public float isometricAngle = 0;
+
 		[JsonMember]
 		public Vector3 rotation; /**< Rotation of the grid in degrees */
 		
@@ -187,35 +207,27 @@ AstarPath.active.Scan();
 		[JsonMember]
 		public bool cutCorners = true;
 		
-		[JsonMember]
 		/** Offset for the position when calculating penalty.
 		  * \see penaltyPosition */
+		[JsonMember]
 		public float penaltyPositionOffset = 0;
-		[JsonMember]
+
 		/** Use position (y-coordinate) to calculate penalty */
-		public bool penaltyPosition = false;
 		[JsonMember]
+
+		public bool penaltyPosition = false;
 		/** Scale factor for penalty when calculating from position.
 		 * \see penaltyPosition
 		 */
+		[JsonMember]
 		public float penaltyPositionFactor = 1F;
 		
 		[JsonMember]
 		public bool penaltyAngle = false;
+
 		[JsonMember]
 		public float penaltyAngleFactor = 100F;
 		
-		/** Holds settings for using a texture as source for a grid graph.
-		 * Texure data can be used for fine grained control over how the graph will look.
-		 * It can be used for positioning, penalty and walkability control.\n
-		 * Below is a screenshot of a grid graph with a penalty map applied.
-		 * It has the effect of the AI taking the longer path along the green (low penalty) areas.\n
-		 * \shadowimage{penaltymap.png}
-		 * Color data is got as 0...255 values.
-		 * \astarpro
-		 * \warning Can only be used with Unity 3.4 and up */
-		[JsonMember]
-		public TextureData textureData = new TextureData ();
 		
 		/** \} */
 		
@@ -255,89 +267,6 @@ AstarPath.active.Scan();
 		/** All nodes in this graph */
 		public GridNode[] nodes;
 		
-		
-		/** Used for using a texture as a source for a grid graph.
-		 * \astarpro
-		 * \warning Can only be used with Unity 3.4 and up */
-		public class TextureData {
-			public bool enabled = false;
-			
-			public Texture2D source = null;
-			public float[] factors = new float[3];
-			public ChannelUse[] channels = new ChannelUse[3];
-			
-#if !UNITY_3_3
-			Color32[] data = null;
-#endif
-			
-			/** Reads texture data */
-			public void Initialize () {
-				if (enabled && source != null) {
-#if !UNITY_3_3
-					for (int i=0;i<channels.Length;i++) {
-						if (channels[i] != ChannelUse.None) {
-							try {
-								data = source.GetPixels32 ();
-							} catch (UnityException e) {
-								Debug.LogWarning (e.ToString ());
-								data = null;
-							}
-							break;
-						}
-					}
-#else
-					Debug.LogError ("Cannot use textures in Unity 3.3, please upgrade to a newer version of Unity");
-#endif
-				}
-			}
-			
-			/** Applies the texture to the node */
-			public void Apply (GridNode node, int x, int z) {
-#if !UNITY_3_3
-				if (enabled && data != null && x < source.width && z < source.height) {
-					Color32 col = data[z*source.width+x];
-					
-					if (channels[0] != ChannelUse.None) {
-						ApplyChannel (node,x,z,col.r,channels[0],factors[0]);
-					}
-					
-					if (channels[1] != ChannelUse.None) {
-						ApplyChannel (node,x,z,col.g,channels[1],factors[1]);
-					}
-					
-					if (channels[2] != ChannelUse.None) {
-						ApplyChannel (node,x,z,col.b,channels[2],factors[2]);
-					}
-				}
-#endif
-			}
-			
-			/** Applies a value to the node using the specified ChannelUse */
-			void ApplyChannel (GridNode node, int x, int z, int value, ChannelUse channelUse, float factor) {
-				switch (channelUse) {
-				case ChannelUse.Penalty:
-					node.Penalty += (uint)Mathf.RoundToInt (value*factor);
-					break;
-				case ChannelUse.Position:
-					node.position = GridNode.GetGridGraph(node.GraphIndex).GetNodePosition (node.NodeInGridIndex, Mathf.RoundToInt (value*factor*Int3.Precision));
-					break;
-				case ChannelUse.WalkablePenalty:
-					if (value == 0) {
-						node.Walkable = false;
-					} else {
-						node.Penalty += (uint)Mathf.RoundToInt ((value-1)*factor);
-					}
-					break;
-				}
-			}
-			
-			public enum ChannelUse {
-				None,
-				Penalty,
-				Position,
-				WalkablePenalty,
-			}
-		}
 		
 		public GridGraph () {
 			unclampedSize = new Vector2 (10,10);
@@ -495,8 +424,10 @@ AstarPath.active.Scan();
 			//size.y = size.y < 0.1F ? 0.1F : size.y;
 			size.y = size.y < nodeSize ? nodeSize : size.y;
 			
-			
-			boundsMatrix.SetTRS (center,Quaternion.Euler (rotation),new Vector3 (aspectRatio,1,1));
+			var isometricMatrix = Matrix4x4.TRS (Vector3.zero, Quaternion.Euler(0,45,0), Vector3.one);
+			isometricMatrix = Matrix4x4.Scale ( new Vector3 ( Mathf.Cos(Mathf.Deg2Rad*isometricAngle), 1, 1 ) ) * isometricMatrix;
+			isometricMatrix = Matrix4x4.TRS (Vector3.zero, Quaternion.Euler(0,-45,0), Vector3.one) * isometricMatrix;
+			boundsMatrix = Matrix4x4.TRS (center,Quaternion.Euler (rotation),new Vector3 (aspectRatio,1,1)) * isometricMatrix;
 			
 			//bounds.center = boundsMatrix.MultiplyPoint (Vector3.up*height*0.5F);
 			//bounds.size = new Vector3 (width*nodeSize,height,depth*nodeSize);
@@ -513,8 +444,11 @@ AstarPath.active.Scan();
 			}
 			
 			//height = size.y;
-			
-			SetMatrix (Matrix4x4.TRS (boundsMatrix.MultiplyPoint3x4 (-new Vector3 (size.x,0,size.y)*0.5F),Quaternion.Euler(rotation), new Vector3 (nodeSize*aspectRatio,1,nodeSize)));
+
+
+			var m = Matrix4x4.TRS (boundsMatrix.MultiplyPoint3x4 (-new Vector3 (size.x,0,size.y)*0.5F),Quaternion.Euler(rotation), new Vector3 (nodeSize*aspectRatio,1,nodeSize)) * isometricMatrix;
+
+			SetMatrix (m);
 		}
 		
 		//public void GenerateBounds () {
@@ -700,9 +634,6 @@ AstarPath.active.Scan();
 		 * The cost for a non-diagonal movement between two adjacent nodes is RoundToInt (#nodeSize * Int3.Precision)\n
 		 * The cost for a diagonal movement between two adjacent nodes is RoundToInt (#nodeSize * Sqrt (2) * Int3.Precision) */
 		public virtual void SetUpOffsetsAndCosts () {
-#if ASTARDEBUG
-			Debug.Log ("+++ --- GridGraph Setting Up Offsets and Costs");
-#endif
 			
 			//First 4 are for the four directly adjacent nodes the last 4 are for the diagonals
 			neighbourOffsets[0] = -width;
@@ -793,7 +724,6 @@ AstarPath.active.Scan();
 			}
 			collision.Initialize (matrix,nodeSize);
 			
-			textureData.Initialize ();
 			
 			//Max slope in cosinus
 			//float cosAngle = Mathf.Cos (maxSlope*Mathf.Deg2Rad);
@@ -807,7 +737,6 @@ AstarPath.active.Scan();
 					
 					UpdateNodePositionCollision (node,x,z);
 					
-					textureData.Apply (node,x,z);
 					
 					/*node.position = matrix.MultiplyPoint3x4 (new Vector3 (x+0.5F,0,z+0.5F));
 					
@@ -850,19 +779,6 @@ AstarPath.active.Scan();
 						
 					CalculateConnections (nodes,x,z,node);
 					
-#if ASTARDEBUG
-					if (z == 5 && x == 5) {
-						int index = z*width+x;
-						Debug.DrawRay ((Vector3)node.position,(Vector3)(nodes[index+neighbourOffsets[0]].position-node.position)*0.5F,Color.red);
-						Debug.DrawRay ((Vector3)node.position,(Vector3)(nodes[index+neighbourOffsets[0]].position-node.position)*0.5F,Color.green);
-						Debug.DrawRay ((Vector3)node.position,(Vector3)(nodes[index+neighbourOffsets[0]].position-node.position)*0.5F,Color.blue);
-						Debug.DrawRay ((Vector3)node.position,(Vector3)(nodes[index+neighbourOffsets[0]].position-node.position)*0.5F,Color.yellow);
-						Debug.DrawRay ((Vector3)node.position,(Vector3)(nodes[index+neighbourOffsets[0]].position-node.position)*0.5F,Color.cyan);
-						Debug.DrawRay ((Vector3)node.position,(Vector3)(nodes[index+neighbourOffsets[0]].position-node.position)*0.5F,Color.magenta);
-						Debug.DrawRay ((Vector3)node.position,(Vector3)(nodes[index+neighbourOffsets[0]].position-node.position)*0.5F,Color.black);
-						Debug.DrawRay ((Vector3)node.position,(Vector3)(nodes[index+neighbourOffsets[0]].position-node.position)*0.5F,Color.white);
-					}
-#endif
 				}
 			}
 			
@@ -1163,111 +1079,6 @@ AstarPath.active.Scan();
 			
 			throw new System.NotSupportedException ();
 			
-#if FALSE
-			
-			int maxCost = Mathf.RoundToInt (autoLinkDistLimit * Int3.Precision);
-			
-			//Loop through all GridGraphs
-			foreach (GridGraph gg in script.astarData.FindGraphsOfType (typeof (GridGraph))) {
-				
-				if (gg == this || gg.nodes == null || nodes == null) {
-					continue;
-				}
-				
-				//Int3 prevPos = gg.GetNearest (nodes[0]).position;
-				
-				//Z = 0
-				for (int x = 0; x < width;x++) {
-					
-					GraphNode node1 = nodes[x];
-					GraphNode node2 = gg.GetNearest ((Vector3)node1.Position).node;
-					
-					Vector3 pos = inverseMatrix.MultiplyPoint3x4 ((Vector3)node2.Position);
-					
-					if (pos.z > 0) {
-						continue;
-					}
-					
-					int cost = (node1.Position-node2.Position).costMagnitude;
-					
-					if (cost > maxCost) {
-						continue;
-					}
-					
-					node1.AddConnection (node2,cost);
-					node2.AddConnection (node1,cost);
-				}
-				
-				//X = 0
-				for (int z = 0; z < depth;z++) {
-					
-					GraphNode node1 = nodes[z*width];
-					GraphNode node2 = gg.GetNearest ((Vector3)node1.Position).node;
-					
-					Vector3 pos = inverseMatrix.MultiplyPoint3x4 ((Vector3)node2.Position);
-					
-					if (pos.x > 0) {
-						continue;
-					}
-					
-					int cost = (node1.Position-node2.Position).costMagnitude;
-					
-					if (cost > maxCost) {
-						continue;
-					}
-					
-					node1.AddConnection (node2,cost);
-					node2.AddConnection (node1,cost);
-				}
-				
-				//Z = max
-				for (int x = 0; x < width;x++) {
-					
-					GraphNode node1 = nodes[(depth-1)*width+x];
-					GraphNode node2 = gg.GetNearest ((Vector3)node1.Position).node;
-					
-					Vector3 pos = inverseMatrix.MultiplyPoint3x4 ((Vector3)node2.Position);
-					
-					if (pos.z < depth-1) {
-						continue;
-					}
-					
-					//Debug.DrawLine (node1.position,node2.position,Color.red);
-					int cost = (node1.Position-node2.Position).costMagnitude;
-					
-					if (cost > maxCost) {
-						continue;
-					}
-					
-					node1.AddConnection (node2,cost);
-					node2.AddConnection (node1,cost);
-				}
-				
-				//X = max
-				for (int z = 0; z < depth;z++) {
-					
-					GraphNode node1 = nodes[z*width+width-1];
-					GraphNode node2 = gg.GetNearest ((Vector3)node1.Position).node;
-					
-					Vector3 pos = inverseMatrix.MultiplyPoint3x4 ((Vector3)node2.Position);
-					
-					if (pos.x < width-1) {
-						continue;
-					}
-					
-					int cost = (node1.Position-node2.Position).costMagnitude;
-					
-					if (cost > maxCost) {
-						continue;
-					}
-					
-					
-					
-					node1.AddConnection (node2,cost);
-					node2.AddConnection (node1,cost);
-				}
-			}
-#endif
 	
 		}
 		
@@ -1330,12 +1141,6 @@ AstarPath.active.Scan();
 								Gizmos.DrawLine ((Vector3)node.position, (Vector3)other.position);
 							}
 						}
-#if ASTAR_GRID_CUSTOM_CONNECTIONS
-						if ( node.connections != null ) for (int i=0;i<node.connections.Length;i++) {
-							GraphNode other = node.connections[i];
-							Gizmos.DrawLine ((Vector3)node.position, (Vector3)other.position);
-						}
-#endif
 					}
 					
 				}
@@ -1463,12 +1268,6 @@ AstarPath.active.Scan();
 			
 			int erosion = o.updateErosion ? erodeIterations : 0;
 			
-#if ASTARDEBUG
-			Matrix4x4 debugMatrix = matrix;
-			debugMatrix *= Matrix4x4.TRS (new Vector3(0.5f,0,0.5f),Quaternion.identity,Vector3.one);
-			
-			originalRect.DebugDraw (debugMatrix,Color.red);
-#endif
 			
 			bool willChangeWalkability = o.updatePhysics || o.modifyWalkability;
 			
@@ -1545,10 +1344,6 @@ AstarPath.active.Scan();
 				}
 			}
 		
-#if ASTARDEBUG
-			physicsRect.DebugDraw (debugMatrix,Color.blue);
-			affectRect.DebugDraw (debugMatrix,Color.black);
-#endif
 			
 			//Recalculate connections
 			if (willChangeWalkability && erosion == 0) {
@@ -1574,10 +1369,6 @@ AstarPath.active.Scan();
 				erosionRect1 = IntRect.Intersection (erosionRect1,gridRect);
 				erosionRect2 = IntRect.Intersection (erosionRect2,gridRect);
 				
-#if ASTARDEBUG
-				erosionRect1.DebugDraw (debugMatrix,Color.magenta);
-				erosionRect2.DebugDraw (debugMatrix,Color.cyan);
-#endif
 				
 				/*
 				all nodes inside clampedRect might have had their walkability changed
@@ -1609,10 +1400,6 @@ AstarPath.active.Scan();
 						
 						GridNode node = nodes[index];
 						
-#if ASTARDEBUG
-						if (!node.Walkable)
-							Debug.DrawRay ((Vector3)node.position, Vector3.up*2,Color.red);
-#endif
 						
 						CalculateConnections (nodes,x,z,node);
 					}
@@ -1728,324 +1515,6 @@ AstarPath.active.Scan();
 		
 		//END IFunnelGraph Implementation
 		
-		/** Returns if there is an obstacle between \a origin and \a end on the graph.
-		 * This is not the same as Physics.Linecast, this function traverses the graph and looks for collisions.
-		 * \astarpro */
-		public bool Linecast (Vector3 _a, Vector3 _b) {
-			GraphHitInfo hit;
-			return Linecast (_a,_b,null, out hit);
-		}
-		
-		/** Returns if there is an obstacle between \a origin and \a end on the graph.
-		 * \param [in] _a Point to linecast from
-		 * \param [in] _b Point to linecast to
-		 * \param [in] hint If you have some idea of what the start node might be (the one close to \a _a), pass it to hint since it can enable faster lookups
-		 * This is not the same as Physics.Linecast, this function traverses the graph and looks for collisions.
-		 * \astarpro */
-		public bool Linecast (Vector3 _a, Vector3 _b, GraphNode hint) {
-			GraphHitInfo hit;
-			return Linecast (_a,_b,hint, out hit);
-		}
-		
-		/** Returns if there is an obstacle between \a origin and \a end on the graph.
-		 * \param [in] _a Point to linecast from
-		 * \param [in] _b Point to linecast to
-		 * \param [out] hit Contains info on what was hit, see GraphHitInfo
-		 * \param [in] hint If you have some idea of what the start node might be (the one close to \a _a), pass it to hint since it can enable faster lookups
-		 * This is not the same as Physics.Linecast, this function traverses the graph and looks for collisions.
-		 * \astarpro */
-		public bool Linecast (Vector3 _a, Vector3 _b, GraphNode hint, out GraphHitInfo hit) {
-			return Linecast (_a, _b, hint, out hit, null);
-		}
-		
-		/** Returns if there is an obstacle between \a origin and \a end on the graph.
-		 * \param [in] _a Point to linecast from
-		 * \param [in] _b Point to linecast to
-		 * \param [out] hit Contains info on what was hit, see GraphHitInfo
-		 * \param [in] hint If you have some idea of what the start node might be (the one close to \a _a), pass it to hint since it can enable faster lookups
-		 * \param trace If a list is passed, then it will be filled with all nodes the linecast traverses
-		 * This is not the same as Physics.Linecast, this function traverses the graph and looks for collisions.
-		 * \astarpro */
-		public bool Linecast (Vector3 _a, Vector3 _b, GraphNode hint, out GraphHitInfo hit, List<GraphNode> trace) {
-			hit = new GraphHitInfo ();
-			
-			//
-			//Node n2 = GetNearest (_b,NNConstraint.None);
-			
-			_a = inverseMatrix.MultiplyPoint3x4 (_a);
-			_a.x -= 0.5F;
-			_a.z -= 0.5F;
-			
-			_b = inverseMatrix.MultiplyPoint3x4 (_b);
-			_b.x -= 0.5F;
-			_b.z -= 0.5F;
-			
-			//Grid coordinates
-			//Int3 a = new Int3 (Mathf.RoundToInt (_a.x),Mathf.RoundToInt (_a.y),Mathf.RoundToInt (_a.z));
-			//Int3 b = new Int3 (Mathf.RoundToInt (_b.x),Mathf.RoundToInt (_b.y),Mathf.RoundToInt (_b.z));
-			
-			//Clamping is needed
-			if (_a.x < -0.5F || _a.z < -0.5F || _a.x >= width-0.5F || _a.z >= depth-0.5F || 
-			    _b.x < -0.5F || _b.z < -0.5F || _b.x >= width-0.5F || _b.z >= depth-0.5F) {
-				
-				//Bounding points of the grid
-				Vector3 p1 = new Vector3 (-0.5F     ,0,      -0.5F);
-				Vector3 p2 = new Vector3 (-0.5F     ,0,	depth-0.5F);
-				Vector3 p3 = new Vector3 (width-0.5F,0,	depth-0.5F);
-				Vector3 p4 = new Vector3 (width-0.5F,0,		 -0.5F);
-				
-				int intersectCount = 0;
-				
-				bool intersect = false;
-				Vector3 intersection = Polygon.SegmentIntersectionPoint (p1,p2,_a,_b, out intersect);
-				
-				if (intersect) {
-					//Debug.Log ("Intersection with p1 and p2 "+_a+" "+_b+" - Intersection: "+intersection);
-					intersectCount++;
-					if (!Polygon.Left (p1,p2,_a)) {
-						_a = intersection;
-					} else {
-						_b = intersection;
-					}
-				}
-				intersection = Polygon.SegmentIntersectionPoint (p2,p3,_a,_b, out intersect);
-				
-				if (intersect) {
-					//Debug.Log ("Intersection with p2 and p3 "+_a+" "+_b+" - Intersection: "+intersection);
-					intersectCount++;
-					if (!Polygon.Left (p2,p3,_a)) {
-						_a = intersection;
-					} else {
-						_b = intersection;
-					}
-				}
-				intersection = Polygon.SegmentIntersectionPoint (p3,p4,_a,_b, out intersect);
-				
-				if (intersect) {
-					//Debug.Log ("Intersection with p3 and p4 "+_a+" "+_b+" - Intersection: "+intersection);
-					intersectCount++;
-					if (!Polygon.Left (p3,p4,_a)) {
-						_a = intersection;
-					} else {
-						_b = intersection;
-					}
-				}
-				intersection = Polygon.SegmentIntersectionPoint (p4,p1,_a,_b, out intersect);
-				
-				if (intersect) {
-					//Debug.Log ("Intersection with p4 and p1 "+_a+" "+_b+" - Intersection: "+intersection);
-					intersectCount++;
-					if (!Polygon.Left (p4,p1,_a)) {
-						_a = intersection;
-					} else {
-						_b = intersection;
-					}
-				}
-				
-				if (intersectCount == 0) {
-					//The line does not intersect with the grid
-					return false;
-				}
-			}
-			
-			Vector3 dir = _b-_a;
-			float magn = dir.magnitude;
-			
-			if (magn == 0) {
-				//Zero length line
-				return false;
-			}
-			
-			float sampleLength = 0.2F;
-			
-			float newMagn = nodeSize * sampleLength;
-			newMagn -= nodeSize * 0.02F;
-			
-			dir = (dir / magn) * newMagn;
-			
-			//Floor to int, number of samples on the line
-			int its = (int)(magn / newMagn);
-			
-			//Debug.Log ("Num Its: "+its+" "+dir);
-			
-			Vector3 originOffset = _a + dir * nodeSize * 0.01F;
-			
-			GraphNode prevNode = null;
-			
-			for (int i=0;i <= its;i++) {
-				
-				Vector3 p = originOffset + dir * i;
-				
-				int x = Mathf.RoundToInt (p.x);
-				int z = Mathf.RoundToInt (p.z);
-				
-				x = x < 0 ? 0 : (x >= width ? width-1 : x);
-				z = z < 0 ? 0 : (z >= depth ? depth-1 : z);
-				
-				/*if (x < 0 || z < 0 || x >= width || z >= depth) {
-					Debug.LogError ("Point Out Of Bounds "+"("+x+", "+z+") "+p+" in iteration "+i+" of "+its+" With a direction magn "+dir.magnitude+"\nA: "+_a+"\nB: "+_b);
-					throw new System.IndexOutOfRangeException ("The point "+x+","+z+ " is outside the bounds of the grid");
-					break;
-				}*/
-				
-				GraphNode node = nodes[z*width+x];
-				
-				if (node == prevNode) continue;
-				
-				if (!node.Walkable) {
-					if (i > 0) {
-						hit.point = matrix.MultiplyPoint3x4 (originOffset + dir * (i-1)+new Vector3 (0.5F,0,0.5F));
-					} else {
-						hit.point = matrix.MultiplyPoint3x4 (_a+new Vector3 (0.5F,0,0.5F));
-					}
-					hit.origin = matrix.MultiplyPoint3x4 (_a+new Vector3 (0.5F,0,0.5F));
-					hit.node = node;
-					return true;
-				}
-				
-				if (i > its-1) {
-					if (Mathf.Abs (p.x-_b.x) <= 0.50001F || Mathf.Abs (p.z - _b.z) <= 0.50001F) {
-						return false;
-					}
-				}
-				
-				if (trace != null) trace.Add (node);
-				
-				prevNode = node;
-					
-			}
-			
-			return false;
-		}
-		
-		/** Returns if \a _b is visible from \a _a on the graph.
-		 * This function is different from the other Linecast functions since it 1) snaps the start and end positions directly to the graph
-		 * and it uses Bresenham's line drawing algorithm as opposed to the others which use sampling at fixed intervals.
-		 * If you only care about if one \b node can see another \b node, then this function is great, but if you need more precision than one node,
-		 * use the normal linecast functions
-		 * 
-		 * \param [in] _a Point to linecast from
-		 * \param [in] _b Point to linecast to
-		 * \param [out] hit Contains info on what was hit, see GraphHitInfo
-		 * \param [in] hint If you have some idea of what the start node might be (the one close to \a _a), pass it to hint since it can enable faster lookups
-		 * 
-		 * This is not the same as Physics.Linecast, this function traverses the graph and looks for collisions.
-		 * \astarpro */
-		public bool SnappedLinecast (Vector3 _a, Vector3 _b, GraphNode hint, out GraphHitInfo hit) {
-			hit = new GraphHitInfo ();
-			
-			//System.DateTime startTime = System.DateTime.UtcNow;
-			
-			GraphNode n1 = GetNearest (_a,NNConstraint.None).node;
-			GraphNode n2 = GetNearest (_b,NNConstraint.None).node;
-			
-			_a = inverseMatrix.MultiplyPoint3x4 ((Vector3)n1.position);
-			_a.x -= 0.5F;
-			_a.z -= 0.5F;
-			
-			_b = inverseMatrix.MultiplyPoint3x4 ((Vector3)n2.position);
-			_b.x -= 0.5F;
-			_b.z -= 0.5F;
-			
-			Int3 a = new Int3 (Mathf.RoundToInt (_a.x),Mathf.RoundToInt (_a.y),Mathf.RoundToInt (_a.z));
-			Int3 b = new Int3 (Mathf.RoundToInt (_b.x),Mathf.RoundToInt (_b.y),Mathf.RoundToInt (_b.z));
-			
-			hit.origin = (Vector3)a;
-			
-			//Debug.DrawLine (matrix.MultiplyPoint3x4 (a*100),matrix.MultiplyPoint3x4 (b*100),Color.yellow);
-			
-			if (!nodes[a.z*width+a.x].Walkable) {
-				hit.node = nodes[a.z*width+a.x];
-				hit.point = matrix.MultiplyPoint3x4 (new Vector3 (a.x+0.5F,0,a.z+0.5F));
-				hit.point.y = ((Vector3)hit.node.position).y;
-				return true;
-			}
-			
-			int dx = Mathf.Abs (a.x-b.x);
-			int dz = Mathf.Abs (a.z-b.z);
-			
-			int sx = 0;
-			int sz = 0;
-			
-			if (a.x < b.x) {
-				sx = 1;
-			} else {
-				sx = -1;
-			}
-			
-			if (a.z < b.z) {
-				sz = 1;
-			} else {
-				sz = -1;
-			}
-			
-			int err = dx-dz;
-			
-			while (true) {
-				
-				if (a.x == b.x && a.z == b.z) {
-					
-					//System.DateTime endTime2 = System.DateTime.UtcNow;
-					//float theTime2 = (endTime2-startTime).Ticks*0.0001F;
-			
-					//Debug.Log ("Grid Linecast : Time "+theTime2.ToString ("0.00"));
-			
-					return false;
-				}
-				
-				int e2 = err*2;
-				
-				int dir = 0;
-				
-				Int3 newPos = a;
-				
-				if (e2 > -dz) {
-					err = err-dz;
-					dir = sx;
-					newPos.x += sx;
-				}
-				
-				if (e2 < dx) {
-					err = err+dx;
-					dir += width*sz;
-					newPos.z += sz;
-				}
-				
-				if (dir == 0) {
-					Debug.LogError ("Offset is zero, this should not happen");
-					return false;
-				}
-				
-				for (int i=0;i<neighbourOffsets.Length;i++) {
-					if (neighbourOffsets[i] == dir) {
-						if (CheckConnection (nodes[a.z*width+a.x] as GridNode,i)) {
-							if (!nodes[newPos.z*width+newPos.x].Walkable) {
-								hit.node = nodes[a.z*width+a.x];
-								hit.point = matrix.MultiplyPoint3x4 (new Vector3 (a.x+0.5F,0,a.z+0.5F));
-								hit.point.y = ((Vector3)hit.node.position).y;
-								return true;
-							}
-							
-							//Debug.DrawLine (matrix.MultiplyPoint3x4 (a*100),matrix.MultiplyPoint3x4 (newPos*100));
-							a = newPos;
-							break;
-						} else {
-						
-							hit.node = nodes[a.z*width+a.x];
-							hit.point = matrix.MultiplyPoint3x4 (new Vector3 (a.x+0.5F,0,a.z+0.5F));
-							hit.point.y = ((Vector3)hit.node.position).y;
-							return true;
-						}
-					}
-				}
-			}
-			
-			//Debug.DrawLine (_a,_b,Color.green);
-			//hit.success = true;
-			
-			//return false;
-			
-		}
 		
 		/** Returns if \a node is connected to it's neighbour in the specified direction.
 		  * This will also return true if #neighbours = NumNeighbours.Four, the direction is diagonal and one can move through one of the adjacent nodes
@@ -2109,9 +1578,6 @@ AstarPath.active.Scan();
 		
 		public override void PostDeserialization () {
 			
-#if ASTARDEBUG
-			Debug.Log ("Grid Graph - Post Deserialize");
-#endif
 			
 			GenerateMatrix ();
 			

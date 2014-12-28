@@ -45,9 +45,6 @@ namespace Pathfinding.Util
 		 * After usage, this list should be released using the Release function (though not strictly necessary).
 		 */
 		public static List<T> Claim () {
-#if ASTAR_NO_POOLING
-			return new List<T>();
-#else
 			lock (pool) {
 				if (pool.Count > 0) {
 					List<T> ls = pool[pool.Count-1];
@@ -57,7 +54,6 @@ namespace Pathfinding.Util
 					return new List<T>();
 				}
 			}
-#endif		
 		}
 		
 		/** Claim a list with minimum capacity
@@ -67,9 +63,6 @@ namespace Pathfinding.Util
 		 * This list returned will have at least the capacity specified.
 		 */
 		public static List<T> Claim (int capacity) {
-#if ASTAR_NO_POOLING
-			return new List<T>(capacity);
-#else
 			lock (pool) {
 				if (pool.Count > 0) {
 					List<T> list = null;
@@ -96,7 +89,6 @@ namespace Pathfinding.Util
 					return new List<T>(capacity);
 				}
 			}
-#endif
 		}
 		
 		/** Makes sure the pool contains at least \a count pooled items with capacity \a size.
@@ -119,20 +111,16 @@ namespace Pathfinding.Util
 		 * \see Claim
 		 */
 		public static void Release (List<T> list) {
-#if !ASTAR_NO_POOLING
 			
 			list.Clear ();
 			
 			lock (pool) {
-#if !ASTAR_OPTIMIZE_POOLING
 				for (int i=0;i<pool.Count;i++)
 					if (pool[i] == list)
 						throw new System.InvalidOperationException ("The List is released even though it is in the pool");
-#endif
 			
 				pool.Add (list);
 			}
-#endif
 		}
 		
 		/** Clears the pool for lists of this type.

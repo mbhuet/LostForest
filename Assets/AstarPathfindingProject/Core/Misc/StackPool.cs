@@ -38,9 +38,6 @@ namespace Pathfinding.Util
 		 * After usage, this stack should be released using the Release function (though not strictly necessary).
 		 */
 		public static Stack<T> Claim () {
-#if ASTAR_NO_POOLING
-			return new Stack<T>();
-#else
 			if (pool.Count > 0) {
 				Stack<T> ls = pool[pool.Count-1];
 				pool.RemoveAt(pool.Count-1);
@@ -48,7 +45,6 @@ namespace Pathfinding.Util
 			} else {
 				return new Stack<T>();
 			}
-#endif		
 		}
 		
 		/** Makes sure the pool contains at least \a count pooled items.
@@ -65,13 +61,11 @@ namespace Pathfinding.Util
 		 * Releasing a stack twice will cause an error.
 		 */
 		public static void Release (Stack<T> stack) {
-#if !ASTAR_NO_POOLING
 			for (int i=0;i<pool.Count;i++)
 				if (pool[i] == stack) UnityEngine.Debug.LogError ("The Stack is released even though it is inside the pool");
 			
 			stack.Clear ();
 			pool.Add (stack);
-#endif
 		}
 		
 		/** Clears all pooled stacks of this type.

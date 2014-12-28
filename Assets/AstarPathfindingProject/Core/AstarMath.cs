@@ -1000,11 +1000,6 @@ namespace Pathfinding {
 				List<Vector3> hull = hullCache;
 				hull.Clear ();
 				
-	#if ASTARDEBUG
-				for (int i=0;i<points.Length;i++) {
-					Debug.DrawLine (points[i],points[(i+1)%points.Length],Color.blue);
-				}
-	#endif
 				
 				int pointOnHull = 0;
 				for (int i=1;i<points.Length;i++) if (points[i].x < points[pointOnHull].x) pointOnHull = i;

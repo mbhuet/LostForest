@@ -27,21 +27,12 @@ namespace Pathfinding {
 		[System.NonSerialized]
 		public NavMeshGraph navmesh; 	/**< Shortcut to the first NavMeshGraph. Updated at scanning time. This is the only reference to NavMeshGraph in the core pathfinding scripts */
 		
-#if !ASTAR_NO_GRID_GRAPH
 		[System.NonSerialized]
 		public GridGraph gridGraph;		/**< Shortcut to the first GridGraph. Updated at scanning time. This is the only reference to GridGraph in the core pathfinding scripts */
-#endif
 
-#if !ASTAR_NO_POINT_GRAPH
 		[System.NonSerialized]
 		public PointGraph pointGraph;		/**< Shortcut to the first PointGraph. Updated at scanning time. This is the only reference to PointGraph in the core pathfinding scripts */
-#endif
 
-		[System.NonSerialized]
-		/** Shortcut to the first RecastGraph. Updated at scanning time. This is the only reference to RecastGraph in the core pathfinding scripts.
-		 * \astarpro
-		 */
-		public RecastGraph recastGraph;
 		
 		/** All supported graph types. Populated through reflection search */
 		public System.Type[] graphTypes = null;
@@ -51,15 +42,9 @@ namespace Pathfinding {
 		 * If you add any custom graph types, you need to add them to this hard-coded list.
 		 */
 		public static readonly System.Type[] DefaultGraphTypes = new System.Type[] {
-#if !ASTAR_NO_GRID_GRAPH
 			typeof(GridGraph),
-#endif
-#if !ASTAR_NO_POINT_GRAPH
 			typeof(PointGraph),
-#endif
 			typeof(NavMeshGraph),
-			typeof(RecastGraph),
-			typeof(LayerGridGraph)
 		};
 #endif
 		
@@ -124,11 +109,7 @@ namespace Pathfinding {
 			/* Set up default values, to not throw null reference errors */
 			userConnections = new UserConnection[0];
 			
-#if false
-			graphs = new NavGraph[1] { CreateGraph (typeof(LinkGraph)) };
-#else
 			graphs = new NavGraph[0];
-#endif
 			/* End default values */
 			
 			if (cacheStartup && data_cachedStartup != null) {
@@ -145,15 +126,10 @@ namespace Pathfinding {
 		public void UpdateShortcuts () {
 			navmesh = (NavMeshGraph)FindGraphOfType (typeof(NavMeshGraph));
 
-#if !ASTAR_NO_GRID_GRAPH
 			gridGraph = (GridGraph)FindGraphOfType (typeof(GridGraph));
-#endif
 
-#if !ASTAR_NO_POINT_GRAPH
 			pointGraph = (PointGraph)FindGraphOfType (typeof(PointGraph));
-#endif
 
-			recastGraph = (RecastGraph)FindGraphOfType (typeof(RecastGraph));
 		}
 		
 		public void LoadFromCache () {
@@ -202,9 +178,6 @@ namespace Pathfinding {
 			SerializeGraphsPart (sr);
 			byte[] bytes = sr.CloseSerialize();
 			checksum = sr.GetChecksum ();
-	#if ASTARDEBUG
-			Debug.Log ("Got a whole bunch of data, "+bytes.Length+" bytes");
-	#endif
 			return bytes;
 		}
 		
@@ -388,9 +361,6 @@ namespace Pathfinding {
 			
 			graphTypes = graphList.ToArray ();
 
-#if ASTARDEBUG
-			Debug.Log ("Found "+graphTypes.Length+" graph types");
-#endif	
 #else		
 			graphTypes = DefaultGraphTypes;
 #endif

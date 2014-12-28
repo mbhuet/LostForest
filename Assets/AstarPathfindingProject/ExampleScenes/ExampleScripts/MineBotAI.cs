@@ -97,14 +97,7 @@ namespace Pathfinding {
 					dir = Vector3.zero;
 				}
 
-				if ( this.rvoController != null ) {
-					rvoController.Move ( dir );
-					velocity = rvoController.velocity;
-				} else 
 				if (navController != null) {
-	#if FALSE
-					navController.SimpleMove (GetFeetPosition(), dir);
-	#endif
 					velocity = Vector3.zero;
 				} else if (controller != null) {
 					controller.SimpleMove (dir);

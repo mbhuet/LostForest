@@ -34,7 +34,6 @@ public class SeekerEditor : Editor {
 
 		EditorGUILayoutx.SetTagField (new GUIContent ("Valid Tags"),ref script.traversableTags);
 
-#if !NoTagPenalty
 		EditorGUI.indentLevel=0;
 		tagPenaltiesOpen = EditorGUILayout.Foldout (tagPenaltiesOpen,new GUIContent ("Tag Penalties","Penalties for each tag"));
 		if (tagPenaltiesOpen) {
@@ -50,7 +49,6 @@ public class SeekerEditor : Editor {
 			}
 		}
 		EditorGUI.indentLevel=1;
-#endif
 		
 		//Do some loading and checking
 		if (!AstarPathEditor.stylesLoaded) {

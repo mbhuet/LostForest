@@ -304,7 +304,6 @@ namespace Pathfinding {
 		 */
 		public virtual Color NodeColor (GraphNode node, PathHandler data) {
 			
-	#if !PhotonImplementation
 			Color c = AstarColor.NodeConnection;
 			bool colSet = false;
 			
@@ -356,9 +355,6 @@ namespace Pathfinding {
 			}
 			c.a *= 0.5F;
 			return c;
-	#else
-			return new Color (1,1,1);
-	#endif
 			
 		}
 		
@@ -384,41 +380,6 @@ namespace Pathfinding {
 		public virtual void PostDeserialization () {
 		}
 
-#if ASTAR_NO_JSON
-		public virtual void SerializeSettings ( GraphSerializationContext ctx ) {
-
-			ctx.writer.Write (guid.ToByteArray());
-			ctx.writer.Write (initialPenalty);
-			ctx.writer.Write (open);
-			ctx.writer.Write (name);
-			ctx.writer.Write (drawGizmos);
-			ctx.writer.Write (infoScreenOpen);
-
-			for ( int i = 0; i < 4; i++ ) {
-				for ( int j = 0; j < 4; j++ ) {
-					ctx.writer.Write (matrix.GetRow(i)[j]);
-				}
-			}
-		}
-
-		public virtual void DeserializeSettings ( GraphSerializationContext ctx ) {
-
-			guid = new Guid(ctx.reader.ReadBytes (16));
-			initialPenalty = ctx.reader.ReadUInt32 ();
-			open = ctx.reader.ReadBoolean();
-			name = ctx.reader.ReadString();
-			drawGizmos = ctx.reader.ReadBoolean();
-			infoScreenOpen = ctx.reader.ReadBoolean();
-
-			for ( int i = 0; i < 4; i++ ) {
-				Vector4 row = Vector4.zero;
-				for ( int j = 0; j < 4; j++ ) {
-					row[j] = ctx.reader.ReadSingle ();
-				}
-				matrix.SetRow (i, row);
-			}
-		}
-#endif
 
 		/** Returns if the node is in the search tree of the path.
 		 * Only guaranteed to be correct if \a path is the latest path calculated.
@@ -525,25 +486,8 @@ namespace Pathfinding {
 		/** Offset to apply after each raycast to make sure we don't hit the same point again in CheckHeightAll */
 		public const float RaycastErrorMargin = 0.005F;
 		
-#if !PhotonImplementation
 		public bool collisionCheck = true; /**< Toggle collision check */
 		public bool heightCheck = true; /**< Toggle height check. If false, the grid will be flat */
-#else
-		//No height or collision checks can be done outside of Unity
-		public bool collisionCheck {
-			get {
-				return false;
-			}
-			set {}
-		}
-		
-		public bool heightCheck {
-			get {
-				return false;
-			}
-			set {}
-		}
-#endif
 	
 		/** Make nodes unwalkable when no ground was found with the height raycast. If height raycast is turned off, this doesn't affect anything. */
 		public bool unwalkableWhenNoGround = true;

@@ -146,9 +146,7 @@ namespace Pathfinding {
 		
 		/** Alerts the Seeker that this modifier exists */
 		public void Awake () {
-#if !PhotonImplementation
 			seeker = GetComponent<Seeker>();
-#endif
 			
 			if (seeker != null) {
 				seeker.RegisterModifier (this);

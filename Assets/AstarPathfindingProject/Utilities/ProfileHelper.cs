@@ -58,9 +58,7 @@ namespace Pathfinding
 		[System.Diagnostics.ConditionalAttribute("PROFILE")]
 		/** Log using System.Console */
 		public void ConsoleLog () {
-#if !NETFX_CORE
 			System.Console.WriteLine (ToString());
-#endif
 		}
 		
 		[System.Diagnostics.ConditionalAttribute("PROFILE")]

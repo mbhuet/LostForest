@@ -22,7 +22,7 @@ public class EnergyBall : ProjectileWeapon {
 	public void Explode(){
 		Collider[] hits = Physics.OverlapSphere (this.transform.position, this.size);
 		foreach (Collider other in hits) {
-			Debug.Log (other.gameObject.name);
+//			Debug.Log (other.gameObject.name);
 
 			if (other.GetComponent<Health>() && other.gameObject != this.owner.gameObject){
 			

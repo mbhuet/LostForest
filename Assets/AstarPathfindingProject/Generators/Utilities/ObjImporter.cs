@@ -32,9 +32,6 @@ namespace Pathfinding {
 	    // Use this for initialization
 	    public static Mesh ImportFile (string filePath) {
 
-#if NETFX_CORE
-			throw new System.NotSupportedException ("Method not available on this platform");
-#else
 			if (!File.Exists (filePath)) {
 				Debug.LogError ("No file was found at '"+filePath+"'");
 				return null;
@@ -72,14 +69,10 @@ namespace Pathfinding {
 	        //mesh.Optimize();
 	        
 	        return mesh;
-#endif
 	    }
 	
 	    private static meshStruct createMeshStruct(string filename)
 	    {
-#if NETFX_CORE
-			throw new System.NotSupportedException ("Method not available on this platform");
-#else
 	        int triangles = 0;
 	        int vertices = 0;
 	        int vt = 0;
@@ -142,14 +135,10 @@ namespace Pathfinding {
 	        mesh.normals = new Vector3[vn];
 	        mesh.faceData = new Vector3[face];
 	        return mesh;
-#endif
 	    }
 	    
 	    private static void populateMeshStruct(ref meshStruct mesh)
 	    {
-#if NETFX_CORE
-			throw new System.NotSupportedException ("Method not available on this platform");
-#else
 	        StreamReader stream = File.OpenText(mesh.fileName);
 	        string entireText = stream.ReadToEnd();
 	        stream.Close();
@@ -264,7 +253,6 @@ namespace Pathfinding {
 	                }
 	            }
 	        }
-#endif
 	    }
 	}
 }

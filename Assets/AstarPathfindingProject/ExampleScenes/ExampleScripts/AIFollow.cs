@@ -232,9 +232,6 @@ public class AIFollow : MonoBehaviour {
 		forwardDir *= Mathf.Clamp01 (Vector3.Dot (dir.normalized, tr.forward));
 		
 		if (navmeshController != null) {
-#if FALSE
-			navmeshController.SimpleMove (tr.position,forwardDir);
-#endif
 		} else if (controller != null) {
 			controller.SimpleMove (forwardDir);
 		} else {

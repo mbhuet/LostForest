@@ -21,28 +21,10 @@ namespace Pathfinding {
 
 		public const int D = 4;
 
-#if TUPLE
-		private Tuple[] binaryHeap; 
-
-		private struct Tuple {
-			public uint F;
-			public PathNode node;
-
-			public Tuple ( uint F, PathNode node ) {
-				this.F = F;
-				this.node = node;
-			}
-		}
-#else
 		private PathNode[] binaryHeap; 
-#endif
 
 		public BinaryHeapM ( int numberOfElements ) { 
-#if TUPLE
-			binaryHeap = new Tuple[numberOfElements]; 
-#else
 			binaryHeap = new PathNode[numberOfElements]; 
-#endif
 			numberOfItems = 0;
 		}
 		
@@ -51,11 +33,7 @@ namespace Pathfinding {
 		}
 		
 		public PathNode GetNode (int i) {
-#if TUPLE
-			return binaryHeap[i].node;
-#else
 			return binaryHeap[i];
-#endif
 		}
 
 		/** Adds a node to the heap */
@@ -70,31 +48,19 @@ namespace Pathfinding {
 						"\nRemove this check (in BinaryHeap.cs) if you are sure that it is not caused by a bug");
 				}
 
-#if TUPLE
-				Tuple[] tmp = new Tuple[newSize];
-#else
 				PathNode[] tmp = new PathNode[newSize];
-#endif
 
 				for (int i=0;i<binaryHeap.Length;i++) {
 					tmp[i] = binaryHeap[i];
 				}
-#if ASTARDEBUG
-				Debug.Log ("Resizing binary heap to "+newSize);
-#endif
 				binaryHeap = tmp;
 				
 				//Debug.Log ("Forced to discard nodes because of binary heap size limit, please consider increasing the size ("+numberOfItems +" "+binaryHeap.Length+")");
 				//numberOfItems--;
 			}
 
-#if TUPLE
-			Tuple obj = new Tuple(node.F,node);
-			binaryHeap[numberOfItems] = obj;
-#else
 			PathNode obj = node;
 			binaryHeap[numberOfItems] = obj;
-#endif
 
 			//node.heapIndex = numberOfItems;//Heap index
 
@@ -135,11 +101,7 @@ namespace Pathfinding {
 		/** Returns the node with the lowest F score from the heap */
 		public PathNode Remove() {
 			numberOfItems--;
-#if TUPLE
-			PathNode returnItem = binaryHeap[0].node;
-#else
 			PathNode returnItem = binaryHeap[0];
-#endif
 
 		 	//returnItem.heapIndex = 0;//Heap index
 			
@@ -249,9 +211,6 @@ namespace Pathfinding {
 		/** Rebuilds the heap by trickeling down all items.
 		 * Usually called after the hTarget on a path has been changed */
 		public void Rebuild () {
-#if ASTARDEBUG
-			int changes = 0;
-#endif
 			
 			for (int i=2;i<numberOfItems;i++) {
 				int bubbleIndex = i;
@@ -265,9 +224,6 @@ namespace Pathfinding {
 						binaryHeap[bubbleIndex] = binaryHeap[parentIndex];
 						binaryHeap[parentIndex] = node;
 						bubbleIndex = parentIndex;
-#if ASTARDEBUG
-						changes++;
-#endif
 					} else {
 						break;
 					}
@@ -275,9 +231,6 @@ namespace Pathfinding {
 				
 			}
 			
-#if ASTARDEBUG
-			Debug.Log ("+++ Rebuilt Heap - "+changes+" changes +++");
-#endif
 			
 		}
 	}

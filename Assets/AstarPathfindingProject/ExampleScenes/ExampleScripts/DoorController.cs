@@ -31,17 +31,11 @@ public class DoorController : MonoBehaviour {
 		
 		if (updateGraphsWithGUO) {
 			GraphUpdateObject guo = new GraphUpdateObject(bounds);
-	#if ConfigureTagsAsMultiple
-			guo.tags = new TagMask ();
-			guo.tags.tagsChange = 1 << bitToChange;
-			guo.tags.tagsSet = open ? 1 << bitToChange : 0;
-	#else
 			int tag = open ? opentag : closedtag;
 			if (tag > 31) { Debug.LogError ("tag > 31"); return; }
 			guo.modifyTag = true;
 			guo.setTag = tag;
 			guo.updatePhysics = false;
-	#endif
 			
 			AstarPath.active.UpdateGraphs (guo);
 		}

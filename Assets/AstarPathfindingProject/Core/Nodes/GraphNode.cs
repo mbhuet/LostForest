@@ -25,10 +25,8 @@ namespace Pathfinding {
 		private int nodeIndex;
 		protected uint flags;
 		
-#if !ASTAR_NO_PENALTY
 		/** Penlty cost for walking on this node. This can be used to make it harder/slower to walk over certain areas. */
 		private uint penalty;
-#endif
 		
 		// Some fallback properties
 		
@@ -99,7 +97,6 @@ namespace Pathfinding {
 		/** Mask of the walkable bit. \see Walkable */
 		const uint FlagsWalkableMask = 1 << FlagsWalkableOffset;
 		
-#if !ASTAR_MORE_AREAS
 		/** Start of region bits. \see Area */
 		const int FlagsAreaOffset = 1;
 		/** Mask of region bits. \see Area */
@@ -109,17 +106,6 @@ namespace Pathfinding {
 		const int FlagsGraphOffset = 11;
 		/** Mask of graph index bits. \see GraphIndex */
 		const uint FlagsGraphMask = (32-1) << FlagsGraphOffset;
-#else
-		/** Start of region bits. \see Area */
-		const int FlagsAreaOffset = 1;
-		/** Mask of region bits. \see Area */
-		const uint FlagsAreaMask = (65536-1) << FlagsAreaOffset;
-		
-		/** Start of graph index bits. \see GraphIndex */
-		const int FlagsGraphOffset = 17;
-		/** Mask of graph index bits. \see GraphIndex */
-		const uint FlagsGraphMask = (4-1) << FlagsGraphOffset;
-#endif
 		public const uint MaxRegionCount = FlagsAreaMask >> FlagsAreaOffset;
 		/** Max number of graphs */
 		public const uint MaxGraphCount = FlagsGraphMask >> FlagsGraphOffset;
@@ -147,7 +133,6 @@ namespace Pathfinding {
 		
 		/** Penalty cost for walking on this node. This can be used to make it harder/slower to walk over certain areas. */
 		public uint Penalty {
-#if !ASTAR_NO_PENALTY
 			get {
 				return penalty;
 			}
@@ -158,10 +143,6 @@ namespace Pathfinding {
 						"Penalty value applied: "+value);
 				penalty = value;
 			}
-#else
-			get { return 0U; }
-			set {}
-#endif
 		}
 		
 		/** True if the node is traversable */

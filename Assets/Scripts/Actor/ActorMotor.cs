@@ -9,7 +9,7 @@ public abstract class ActorMotor : MonoBehaviour{
 	public enum MotorState {WALKING, STUNNED, ROLLING, FLYING};
 	public MotorState state;
 	protected CharacterController controller;
-	protected RVOController rvoController;
+//	protected RVOController rvoController;
 
 	protected Vector3 moveDir;
 	public float moveSpeed;
@@ -23,7 +23,7 @@ public abstract class ActorMotor : MonoBehaviour{
 
 	protected virtual void Awake(){
 		controller = this.GetComponent<CharacterController> ();
-		rvoController = this.GetComponent<RVOController> ();
+//		rvoController = this.GetComponent<RVOController> ();
 
 	}
 
@@ -46,8 +46,8 @@ public abstract class ActorMotor : MonoBehaviour{
 		//this is necessarye because CharControllers only calculate velocity when Move is called
 		if (controller != null)
 			controller.Move(Vector3.zero);
-		else if (rvoController != null)
-			rvoController.Move(Vector3.zero);
+//		else if (rvoController != null)
+//			rvoController.Move(Vector3.zero);
 
 	}
 

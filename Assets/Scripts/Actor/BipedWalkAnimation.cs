@@ -1,12 +1,15 @@
 using UnityEngine;
 using System.Collections;
+using Pathfinding;
+using Pathfinding.RVO;
 
 [RequireComponent(typeof(Actor))]
 public class BipedWalkAnimation : MonoBehaviour {
 
 	Actor actor;
 	CharacterController controller;
-	public bool useCharacterController;
+//	RVOController rvoController;
+
 	public GameObject leftFoot;
 	public GameObject rightFoot;
 
@@ -39,7 +42,8 @@ public class BipedWalkAnimation : MonoBehaviour {
 	// Use this for initialization
 	void Awake () {
 		actor = this.gameObject.GetComponent<Actor>();
-		if (useCharacterController) controller = this.gameObject.GetComponent<CharacterController>();
+		controller = this.gameObject.GetComponent<CharacterController>();
+//		rvoController = this.gameObject.GetComponent<RVOController>();
 
 		feet = new GameObject[]{leftFoot, rightFoot};
 
@@ -47,7 +51,7 @@ public class BipedWalkAnimation : MonoBehaviour {
 		origins = new GameObject[]{leftOrigin, rightOrigin};
 
 		footprints = new Vector3[]{leftOrigin.transform.position, rightOrigin.transform.position};
-		lastPosition = new Vector3[2];
+		lastPosition = new Vector3[]{leftOrigin.transform.position, rightOrigin.transform.position};
 		stickPositions = new Vector3[]{feet[0].transform.position, feet[1].transform.position};
 		stickRotations = new Quaternion[]{feet[0].transform.rotation, feet[1].transform.rotation};
 
@@ -70,10 +74,13 @@ public class BipedWalkAnimation : MonoBehaviour {
 
 	
 	void Update(){
-		if (useCharacterController) {
-						velocity = controller.velocity;		
-				} else
-						velocity = rigidbody.velocity;
+		if (controller != null) {
+			velocity = controller.velocity;	
+//		} else if (rvoController != null) {
+//			velocity = rvoController.velocity;	
+		} else if (rigidbody != null) {
+			velocity = rigidbody.velocity;
+		}
 		MoveFoot();
 	}
 
@@ -137,6 +144,7 @@ public class BipedWalkAnimation : MonoBehaviour {
 		for (int i = 0; i < 2; i++){
 			lastPosition[i] = feet[i].transform.position;
 		}
+//		Debug.Log (idle);
 	}
 
 

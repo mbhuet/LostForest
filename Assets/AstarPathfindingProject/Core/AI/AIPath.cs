@@ -36,7 +36,8 @@ using Pathfinding.RVO;
 [RequireComponent(typeof(Seeker))]
 [AddComponentMenu("Pathfinding/AI/AIPath (generic)")]
 public class AIPath : MonoBehaviour {
- 	/** Determines how often it will search for new paths. 
+	
+	/** Determines how often it will search for new paths. 
 	 * If you have fast moving targets or AIs, you might want to set it to a lower value.
 	 * The value is in seconds between path requests.
 	 */
@@ -115,7 +116,6 @@ public class AIPath : MonoBehaviour {
 	/** Cached NavmeshController component */
 	protected NavmeshController navController;
 	
-	protected RVOController rvoController;
 	
 	/** Cached Rigidbody component */
 	protected Rigidbody rigid;
@@ -159,8 +159,6 @@ public class AIPath : MonoBehaviour {
 		//Cache some other components (not all are necessarily there)
 		controller = GetComponent<CharacterController>();
 		navController = GetComponent<NavmeshController>();
-		rvoController = GetComponent<RVOController>();
-		if ( rvoController != null ) rvoController.enableRotation = false;
 		rigid = rigidbody;
 	}
 	
@@ -303,9 +301,6 @@ public class AIPath : MonoBehaviour {
 			dir /= magn;
 			int steps = (int)(magn/pickNextWaypointDist);
 
-#if ASTARDEBUG
-			Debug.DrawLine (p1,p2,Color.red,1);
-#endif
 
 			for (int i=0;i<=steps;i++) {
 				CalculateVelocity (p1);
@@ -316,36 +311,23 @@ public class AIPath : MonoBehaviour {
 	}
 	
 	public virtual Vector3 GetFeetPosition () {
-		if (rvoController != null) {
-			return tr.position - Vector3.up*rvoController.height*0.5f;
-		} else
 		if (controller != null) {
 			return tr.position - Vector3.up*controller.height*0.5F;
 		}
 
 		return tr.position;
 	}
-
-
+	
 	public virtual void Update () {
 		
 		if (!canMove) { return; }
 		
 		Vector3 dir = CalculateVelocity (GetFeetPosition());
-		Debug.Log ("dir " +dir);
-
-		/* I want my ActorMotor to handle this biz
+		
 		//Rotate towards targetDirection (filled in by CalculateVelocity)
 		RotateTowards (targetDirection);
 	
-
-		if (rvoController != null) {
-			rvoController.Move (dir);
-		} else
 		if (navController != null) {
-#if FALSE
-			navController.SimpleMove (GetFeetPosition(),dir);
-#endif
 		} else if (controller != null) {
 			controller.SimpleMove (dir);
 		} else if (rigid != null) {
@@ -353,12 +335,8 @@ public class AIPath : MonoBehaviour {
 		} else {
 			transform.Translate (dir*Time.deltaTime, Space.World);
 		}
-		*/
-
-
 	}
-
-
+	
 	/** Point to where the AI is heading.
 	  * Filled in by #CalculateVelocity */
 	protected Vector3 targetPoint;
@@ -419,7 +397,8 @@ public class AIPath : MonoBehaviour {
 		Vector3 targetPosition = CalculateTargetPoint (currentPosition,vPath[currentWaypointIndex-1] , vPath[currentWaypointIndex]);
 			//vPath[currentWaypointIndex] + Vector3.ClampMagnitude (dir,forwardLook);
 		
-
+		
+		
 		dir = targetPosition-currentPosition;
 		dir.y = 0;
 		float targetDist = dir.magnitude;
@@ -435,24 +414,16 @@ public class AIPath : MonoBehaviour {
 			//Send a move request, this ensures gravity is applied
 			return Vector3.zero;
 		}
-
-		//THIS block is modifying the vector so it moves forward fastest
+		
 		Vector3 forward = tr.forward;
-		float dot = 1;//Vector3.Dot (dir.normalized,forward);
+		float dot = Vector3.Dot (dir.normalized,forward);
 		float sp = speed * Mathf.Max (dot,minMoveScale) * slowdown;
 		
-#if ASTARDEBUG
-		Debug.DrawLine (vPath[currentWaypointIndex-1] , vPath[currentWaypointIndex],Color.black);
-		Debug.DrawLine (GetFeetPosition(),targetPosition,Color.red);
-		Debug.DrawRay (targetPosition,Vector3.up, Color.red);
-		Debug.DrawRay (GetFeetPosition(),dir,Color.yellow);
-		Debug.DrawRay (GetFeetPosition(),forward*sp,Color.cyan);
-#endif
+		
 		if (Time.deltaTime	> 0) {
 			sp = Mathf.Clamp (sp,0,targetDist/(Time.deltaTime*2));
 		}
-		//ORIGINAL return forward*sp;
-		return dir*sp;
+		return forward*sp;
 	}
 	
 	/** Rotates in the specified direction.

@@ -9,23 +9,6 @@ namespace Pathfinding {
 	/** Base class for all path types */
 	public abstract class Path {
 	
-#if ASTAR_POOL_DEBUG
-		private string pathTraceInfo = "";
-		private List<string> claimInfo = new List<string>();
-		~Path() {
-			Debug.Log ("Destroying " + GetType().Name + " instance");
-			if (claimed.Count > 0) {
-				Debug.LogWarning ("Pool Is Leaking. See list of claims:\n" +
-					"Each message below will list what objects are currently claiming the path." +
-					" These objects have removed their reference to the path object but has not called .Release on it (which is bad).\n" + pathTraceInfo+"\n");
-				for (int i=0;i<claimed.Count;i++) {
-					Debug.LogWarning ("- Claim "+ (i+1) + " is by a " + claimed[i].GetType().Name + "\n"+claimInfo[i]);
-				}
-			} else {
-				Debug.Log ("Some scripts are not using pooling.\n" + pathTraceInfo + "\n");
-			}
-		}
-#endif
 		
 		/** Data for the thread calculating this path */
 		public PathHandler pathHandler;
@@ -36,12 +19,8 @@ namespace Pathfinding {
 		public OnPathDelegate callback;
 		
 		
-#if !ASTAR_LOCK_FREE_PATH_STATE
 		private PathState state;
 		private System.Object stateLock = new object();
-#else
-		private int state;
-#endif
 		
 		/** Current state of the path.
 		 * \see #CompleteState
@@ -155,11 +134,7 @@ namespace Pathfinding {
 		public float heuristicScale = 1F;
 		
 		/** ID of this path. Used to distinguish between different paths */
-#if ASTAR_MORE_PATH_IDS	
-		public uint pathID;
-#else
 		public ushort pathID;
-#endif
 		
 		protected Int3 hTarget; /**< Target to use for H score calculations. \see Pathfinding.Node.H */
 		
@@ -269,15 +244,9 @@ yield return StartCoroutine (p.WaitForPath ());
 		
 		/** Returns if the node can be traversed.
 		  * This per default equals to if the node is walkable and if the node's tag is included in #enabledTags */
-#if ConfigureTagsAsMultiple
-		public bool CanTraverse (GraphNode node) {
-			return node.walkable && (node.tags & enabledTags) != 0;
-		}
-#else
 		public bool CanTraverse (GraphNode node) {
 			unchecked { return node.Walkable && (enabledTags >> (int)node.Tag & 0x1) != 0; }
 		}
-#endif
 		
 		public uint GetTraversalCost (GraphNode node) {
 			unchecked { return GetTagPenalty ((int)node.Tag ) + node.Penalty; }
@@ -318,18 +287,12 @@ yield return StartCoroutine (p.WaitForPath ());
 		}
 		
 		/** Threadsafe increment of the state */
-#if !ASTAR_LOCK_FREE_PATH_STATE
 		public void AdvanceState (PathState s) {
 
 			lock (stateLock) {
 				state = (PathState)System.Math.Max ((int)state, (int)s);
 			}
 		}
-#else
-		public void AdvanceState () {
-			System.Threading.Interlocked.Increment (ref state);
-		}
-#endif
 		
 		/** Returns the state of the path in the pathfinding pipeline */
 		public PathState GetState () {
@@ -344,9 +307,6 @@ yield return StartCoroutine (p.WaitForPath ());
 // What it does is that it disables the LogError function if ASTAR_NO_LOGGING is enabled
 // since the DISABLED define will never be enabled
 // Ugly way of writing Conditional("!ASTAR_NO_LOGGING")
-#if ASTAR_NO_LOGGING
-		[System.Diagnostics.Conditional("DISABLED")]
-#endif
 		public void LogError (string msg) {
 			// Optimize for release builds
 			if (!(!AstarPath.isEditor && AstarPath.active.logPathResults == PathLog.None)) {
@@ -426,10 +386,6 @@ yield return StartCoroutine (p.WaitForPath ());
 		 * \warning This function should not be called manually.
 		  */
 		public virtual void Reset () {
-#if ASTAR_POOL_DEBUG
-			pathTraceInfo = "This path was got from the pool or created from here (stacktrace):\n";
-			pathTraceInfo += System.Environment.StackTrace;
-#endif
 				
 			if (AstarPath.active == null)
 				throw new System.NullReferenceException ("No AstarPath object found in the scene. " +
@@ -530,9 +486,6 @@ public override void Recycle () {
 			}
 			
 			claimed.Add (o);
-#if ASTAR_POOL_DEBUG
-			claimInfo.Add (o.ToString () + "\n\nClaimed from:\n" + System.Environment.StackTrace);
-#endif
 		}
 		
 		/** Releases the path silently.
@@ -547,9 +500,6 @@ public override void Recycle () {
 			for (int i=0;i<claimed.Count;i++) {
 				if (claimed[i] == o) {
 					claimed.RemoveAt (i);
-#if ASTAR_POOL_DEBUG
-					claimInfo.RemoveAt (i);
-#endif
 					if (releasedNotSilent && claimed.Count == 0) {
 						Recycle ();
 					}
@@ -577,9 +527,6 @@ public override void Recycle () {
 			for (int i=0;i<claimed.Count;i++) {
 				if (claimed[i] == o) {
 					claimed.RemoveAt (i);
-#if ASTAR_POOL_DEBUG
-					claimInfo.RemoveAt (i);
-#endif
 					releasedNotSilent = true;
 					if (claimed.Count == 0) {
 						Recycle ();
