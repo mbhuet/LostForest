@@ -31,7 +31,7 @@ public class DummyInput : ActorInput {
 		if (forceMoveDirection)
 				moveDir = moveDirection;
 
-		//motor.SetMoveDirection(moveDir.normalized);
+		motor.SetMoveDirection(moveDir.normalized);
 
 		if (Vector3.Distance (this.transform.position, GameManager.Instance.player.transform.position) < 3) {
 						weapons.BeginUse (1);

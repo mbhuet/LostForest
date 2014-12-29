@@ -423,7 +423,9 @@ public class AIPath : MonoBehaviour {
 		if (Time.deltaTime	> 0) {
 			sp = Mathf.Clamp (sp,0,targetDist/(Time.deltaTime*2));
 		}
-		return forward*sp;
+
+		//ORIGINALLY return forward*sp;
+		return dir * sp;
 	}
 	
 	/** Rotates in the specified direction.
