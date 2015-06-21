@@ -329,6 +329,7 @@ public class AIPath : MonoBehaviour {
 	
 		if (navController != null) {
 		} else if (controller != null) {
+			Debug.Log(dir);
 			controller.SimpleMove (dir);
 		} else if (rigid != null) {
 			rigid.AddForce (dir);
