@@ -16,7 +16,7 @@ public class CheckVelocity : MonoBehaviour {
 		if (useCharacterController)
 						v = controller.velocity;
 				else
-						v = rigidbody.velocity;
+						v = GetComponent<Rigidbody>().velocity;
 		Debug.Log ("Velocity Check " + v);
 
 	}

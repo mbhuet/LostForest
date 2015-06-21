@@ -13,21 +13,21 @@ public class EnergyImpact : SpecialEffect {
 	}
 	
 	public override void Run(float size){
-		particleSystem.startSize = size * 2;
-		particleSystem.Emit (1);
-		GameObject.Destroy (this.gameObject, particleSystem.startLifetime);
+		GetComponent<ParticleSystem>().startSize = size * 2;
+		GetComponent<ParticleSystem>().Emit (1);
+		GameObject.Destroy (this.gameObject, GetComponent<ParticleSystem>().startLifetime);
 	}
 
 	private void SetStartSize(float size){
 		ParticleSystem.Particle[] _particles = new ParticleSystem.Particle[1];
-		this.particleSystem.GetParticles(_particles);
+		this.GetComponent<ParticleSystem>().GetParticles(_particles);
 
 		ParticleSystem.Particle wave = _particles[0];
 		wave.color = Color.red;
 		wave.size = size * 100;
 		Debug.Log ("here");
 
-		this.particleSystem.SetParticles(_particles, 1);
+		this.GetComponent<ParticleSystem>().SetParticles(_particles, 1);
 
 	}
 }

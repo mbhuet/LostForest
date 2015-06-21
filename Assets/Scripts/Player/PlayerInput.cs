@@ -5,6 +5,9 @@ using System.Collections;
 
 public class PlayerInput : ActorInput {
 
+	void Start(){
+		weapons.BeginUse (0);
+}
 
 	void Update () {
 		if (Input.GetKeyDown (KeyCode.Space)) {

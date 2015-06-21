@@ -54,7 +54,7 @@ public class Arrow : ProjectileWeapon {
 				}
 
 				else{
-					SpecialEffect blockEffect = (SpecialEffect)GameObject.Instantiate (blockedImpact, this.collider.bounds.center + this.transform.forward * this.collider.bounds.extents.z, this.transform.rotation) as SpecialEffect;
+					SpecialEffect blockEffect = (SpecialEffect)GameObject.Instantiate (blockedImpact, this.GetComponent<Collider>().bounds.center + this.transform.forward * this.GetComponent<Collider>().bounds.extents.z, this.transform.rotation) as SpecialEffect;
 					blockEffect.Run (1);
 				}
 

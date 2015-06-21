@@ -5,7 +5,7 @@ public class Dummy : Actor {
 
 	// Use this for initialization
 	void Start () {
-		rigidbody.WakeUp ();
+		GetComponent<Rigidbody>().WakeUp ();
 	}
 	
 	// Update is called once per frame

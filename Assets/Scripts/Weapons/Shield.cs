@@ -18,17 +18,17 @@ public class Shield : HandWeapon {
 	}
 	
 	public override void BeginUse(int hand){
-		owner.animation["RaiseShield"].speed = 1f;
-		owner.animation.Play("RaiseShield");
+		owner.GetComponent<Animation>()["RaiseShield"].speed = 1f;
+		owner.GetComponent<Animation>().Play("RaiseShield");
 		this.active = true;
 	}
 	public override void HoldUse(int hand){
 	}
 	public override void EndUse(int hand){
 		this.active = false;
-		owner.animation["RaiseShield"].time = owner.animation["RaiseShield"].length;
-		owner.animation["RaiseShield"].speed = -1f;
-		owner.animation.Play("RaiseShield");
+		owner.GetComponent<Animation>()["RaiseShield"].time = owner.GetComponent<Animation>()["RaiseShield"].length;
+		owner.GetComponent<Animation>()["RaiseShield"].speed = -1f;
+		owner.GetComponent<Animation>().Play("RaiseShield");
 	}
 
 	void OnTriggerStay(Collider other){

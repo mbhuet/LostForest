@@ -167,7 +167,7 @@ public class MapGeneration : MonoBehaviour {
 				block.transform.parent = worldRoot;
 				block.transform.localScale = new Vector3(1, heightData[i, j], 1);
 				block.transform.position = new Vector3(i, heightData[i, j] / 2.0f, j);
-				block.renderer.material.color = heightColorGradient.Evaluate(heightData[i, j] / globalHeightMax);
+				block.GetComponent<Renderer>().material.color = heightColorGradient.Evaluate(heightData[i, j] / globalHeightMax);
 				block.name = "Block_" + i + "_" + j;
 				// Editor stuff
 				//Debug.Log("Generating Level: " + ((i * mapWidth) + j) + "/" + (mapWidth * mapHeight));

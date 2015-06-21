@@ -13,8 +13,8 @@ public class SwordImpact : SpecialEffect{
 	}
 
 	public override void Run(float size){
-		particleSystem.Emit (10);
-		GameObject.Destroy (this.gameObject, particleSystem.startLifetime);
+		GetComponent<ParticleSystem>().Emit (10);
+		GameObject.Destroy (this.gameObject, GetComponent<ParticleSystem>().startLifetime);
 	}
 
 

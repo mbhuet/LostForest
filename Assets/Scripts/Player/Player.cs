@@ -7,8 +7,8 @@ public class Player : Actor {
 	}
 
 	void Start(){
-		animation.Blend("0_Idle");
-		animation.Blend("1_Idle");
+		GetComponent<Animation>().Blend("0_Idle");
+		GetComponent<Animation>().Blend("1_Idle");
 
 	 }
 }

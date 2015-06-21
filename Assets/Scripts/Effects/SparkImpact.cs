@@ -13,7 +13,7 @@ public class SparkImpact : SpecialEffect {
 	}
 	
 	public override void Run(float size){
-		particleSystem.Emit (50);
-		GameObject.Destroy (this.gameObject, particleSystem.startLifetime);
+		GetComponent<ParticleSystem>().Emit (50);
+		GameObject.Destroy (this.gameObject, GetComponent<ParticleSystem>().startLifetime);
 	}
 }

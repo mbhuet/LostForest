@@ -82,8 +82,8 @@ public class Sword : HandWeapon {
 			if (comboIndex > combos.Length-1) comboIndex = 0;
 
 
-			bool play = owner.animation.Play(combos[comboIndex]);
-			yield return new WaitForSeconds ((owner.animation [combos [comboIndex]].length - endComboWindow));
+			bool play = owner.GetComponent<Animation>().Play(combos[comboIndex]);
+			yield return new WaitForSeconds ((owner.GetComponent<Animation>() [combos [comboIndex]].length - endComboWindow));
 
 			acceptCombo = true;
 
@@ -99,7 +99,7 @@ public class Sword : HandWeapon {
 			}
 		} while (comboFlag);
 		inAttack = false;
-		owner.animation.Blend (hand + "_Idle");
+		owner.GetComponent<Animation>().Blend (hand + "_Idle");
 	}
 
 

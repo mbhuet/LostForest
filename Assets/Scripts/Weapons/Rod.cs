@@ -51,23 +51,23 @@ public class Rod : HandWeapon {
 			this.active = true;
 
 			
-			owner.animation.Play("RaiseRod");
-			yield return new WaitForSeconds (owner.animation["RaiseRod"].length);
+			owner.GetComponent<Animation>().Play("RaiseRod");
+			yield return new WaitForSeconds (owner.GetComponent<Animation>()["RaiseRod"].length);
 
-			ProjectileWeapon curProjectile = (ProjectileWeapon)GameObject.Instantiate(projectile, this.collider.bounds.center + Vector3.up * (1 + this.collider.bounds.extents.y ), Quaternion.identity) as ProjectileWeapon;
+			ProjectileWeapon curProjectile = (ProjectileWeapon)GameObject.Instantiate(projectile, this.GetComponent<Collider>().bounds.center + Vector3.up * (1 + this.GetComponent<Collider>().bounds.extents.y ), Quaternion.identity) as ProjectileWeapon;
 			curProjectile.owner = (this.owner);
 			while (buttonHeld){
 				if (curProjectile.size < curProjectile.maxSize){
 					curProjectile.size = Mathf.Lerp(curProjectile.size, curProjectile.maxSize, Time.deltaTime);
-					curProjectile.transform.position = this.collider.bounds.center + Vector3.up * (curProjectile.renderer.bounds.extents.y + this.collider.bounds.extents.y );
+					curProjectile.transform.position = this.GetComponent<Collider>().bounds.center + Vector3.up * (curProjectile.GetComponent<Renderer>().bounds.extents.y + this.GetComponent<Collider>().bounds.extents.y );
 				}
 				yield return null;
 			}
 			
 			acceptCombo = true;
-			owner.animation.Play("WaveRod");
+			owner.GetComponent<Animation>().Play("WaveRod");
 			curProjectile.Launch(GameManager.Instance.cursorWorldPosition);
-			yield return new WaitForSeconds (owner.animation["WaveRod"].length);
+			yield return new WaitForSeconds (owner.GetComponent<Animation>()["WaveRod"].length);
 			
 			swipeTrail.Emit = false;
 			this.active = false;
@@ -79,7 +79,7 @@ public class Rod : HandWeapon {
 			}
 		} while (comboFlag);
 		inAttack = false;
-		owner.animation.Play (hand + "_Idle");
+		owner.GetComponent<Animation>().Play (hand + "_Idle");
 
 	}
 	

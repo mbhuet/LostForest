@@ -78,8 +78,8 @@ public class BipedWalkAnimation : MonoBehaviour {
 			velocity = controller.velocity;	
 //		} else if (rvoController != null) {
 //			velocity = rvoController.velocity;	
-		} else if (rigidbody != null) {
-			velocity = rigidbody.velocity;
+		} else if (GetComponent<Rigidbody>() != null) {
+			velocity = GetComponent<Rigidbody>().velocity;
 		}
 		MoveFoot();
 	}

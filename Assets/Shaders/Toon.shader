@@ -1,3 +1,5 @@
+#warning Upgrade NOTE: unity_Scale shader variable was removed; replaced 'unity_Scale.w' with '1.0'
+
 Shader "DT_Shaders/Toon" {
     Properties {
         _DiffuseMap ("Diffuse Map", 2D) = "white" {}
@@ -83,7 +85,7 @@ Shader "DT_Shaders/Toon" {
             VertexOutput vert (VertexInput v) {
                 VertexOutput o;
                 o.uv0 = v.uv0;
-                o.shLight = ShadeSH9(float4(v.normal * unity_Scale.w,1)) * 0.5;
+                o.shLight = ShadeSH9(float4(v.normal * 1.0,1)) * 0.5;
                 o.normalDir = mul(float4(v.normal,0), _World2Object).xyz;
                 o.posWorld = mul(_Object2World, v.vertex);
                 o.pos = mul(UNITY_MATRIX_MVP, v.vertex);

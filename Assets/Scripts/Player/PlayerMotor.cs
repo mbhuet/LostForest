@@ -7,7 +7,7 @@ public class PlayerMotor : ActorMotor {
 	public float rollTime;
 
 
-	void Awake(){
+	protected override void Awake(){
 		base.Awake ();
 		walkAnim = this.GetComponent<BipedWalkAnimation> ();
 	}
@@ -61,7 +61,7 @@ public class PlayerMotor : ActorMotor {
 	}
 
 	IEnumerator RollRoutine(){
-		collider.enabled = false;
+		GetComponent<Collider>().enabled = false;
 
 		state = MotorState.ROLLING;
 		walkAnim.enabled = false;
@@ -80,7 +80,7 @@ public class PlayerMotor : ActorMotor {
 		state = MotorState.WALKING;
 		walkAnim.enabled = true;
 
-		collider.enabled = true;
+		GetComponent<Collider>().enabled = true;
 
 	}
 }
