@@ -11,7 +11,7 @@ public class PlayerInput : ActorInput {
 
 	void Update () {
 		if (Input.GetKeyDown (KeyCode.Space)) {
-			motor.Roll();		
+//			motor.Roll();		
 		}
 
 		motor.Look (GameManager.Instance.cursorWorldPosition);

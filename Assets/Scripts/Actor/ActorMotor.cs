@@ -19,7 +19,7 @@ public abstract class ActorMotor : MonoBehaviour{
 	public abstract void SetMoveDirection(Vector3 moveDir);
 	protected abstract void Move(Vector3 movement);
 	public abstract void Look(Vector3 lookDir);
-	public abstract void Roll();
+	//public abstract void Roll();
 
 	protected virtual void Awake(){
 		controller = this.GetComponent<CharacterController> ();

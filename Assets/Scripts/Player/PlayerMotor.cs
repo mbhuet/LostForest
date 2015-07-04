@@ -54,7 +54,7 @@ public class PlayerMotor : ActorMotor {
 //			rvoController.Move (movement);
 	}
 
-	public override void Roll(){
+	public void Roll(){
 		if (state == MotorState.WALKING) {
 			StartCoroutine ("RollRoutine");
 		}
