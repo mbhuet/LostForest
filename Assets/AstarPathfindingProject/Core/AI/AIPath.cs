@@ -325,11 +325,10 @@ public class AIPath : MonoBehaviour {
 		Vector3 dir = CalculateVelocity (GetFeetPosition());
 
 		//Rotate towards targetDirection (filled in by CalculateVelocity)
-		RotateTowards (targetDirection);
+		//RotateTowards (targetDirection);
 	
 		if (navController != null) {
 		} else if (controller != null) {
-			Debug.Log(dir);
 			controller.SimpleMove (dir);
 		} else if (rigid != null) {
 			rigid.AddForce (dir);
@@ -412,16 +411,19 @@ public class AIPath : MonoBehaviour {
 			//Send a move request, this ensures gravity is applied
 			return Vector3.zero;
 		}
-		
+
+		//NOTE: THIS IS WHERE FORWARD VECTOR BECOMES A FACTOR
 		Vector3 forward = tr.forward;
-		float dot = Vector3.Dot (dir.normalized,forward);
+		float dot = 1f;//CHANGED Vector3.Dot (dir.normalized,forward);
 		float sp = speed * Mathf.Max (dot,minMoveScale) * slowdown;
-		
-		
+
 		if (Time.deltaTime	> 0) {
 			sp = Mathf.Clamp (sp,0,targetDist/(Time.deltaTime*2));
 		}
-		return forward*sp;
+
+//		Debug.Log (sp);
+
+		return dir.normalized * sp;//CHANGED forward*sp;
 	}
 	
 	/** Rotates in the specified direction.

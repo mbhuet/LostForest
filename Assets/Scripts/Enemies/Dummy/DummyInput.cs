@@ -26,14 +26,11 @@ public class DummyInput : ActorInput {
 		motor.Look (GameManager.Instance.player.transform.position);
 		moveDir = aiPath.CalculateVelocity (aiPath.GetFeetPosition());
 		Debug.DrawRay (this.transform.position, moveDir.normalized*3, Color.yellow);
-		//Debug.Log ("moveDir " +moveDir);
 
 		if (forceMoveDirection)
-				moveDir = moveDirection;
+			moveDir = moveDirection;
 
-		//motor.SetMoveDirection(moveDir.normalized);
-		//GetComponent<CharacterController> ().Move (moveDir);
-
+		motor.SetMoveDirection(moveDir);
 
 		if (Vector3.Distance (this.transform.position, GameManager.Instance.player.transform.position) < 3) {
 						weapons.BeginUse (1);

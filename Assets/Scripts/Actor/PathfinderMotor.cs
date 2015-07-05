@@ -2,7 +2,7 @@
 using System.Collections;
 
 public class PathfinderMotor : ActorMotor {	
-	
+
 	protected override void Awake(){
 		base.Awake ();
 	}
@@ -15,16 +15,13 @@ public class PathfinderMotor : ActorMotor {
 	void Update () {
 		
 		if (state == MotorState.WALKING) {
-			//Move (moveDir);
-			
+			Move (moveDir);
+
 		} else if (state == MotorState.STUNNED) {
-			//Move (knockbackDir * Time.deltaTime);
+			Move (knockbackDir);
 		}
 	}
-	
-	void FixedUpdate(){
-		
-	}
+
 	
 	
 	public override void SetMoveDirection(Vector3 moveDir){
@@ -39,8 +36,9 @@ public class PathfinderMotor : ActorMotor {
 	}
 	
 	protected override void Move(Vector3 movement){
-		if (controller != null)
-			controller.Move (movement);
+		if (controller != null) {
+						controller.Move (movement * Time.deltaTime);
+				}
 
 	}
 
