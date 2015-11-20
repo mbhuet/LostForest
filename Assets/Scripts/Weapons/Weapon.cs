@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+
 public abstract class Weapon : Item {
 	public float damage;
 	public float force;

@@ -9,12 +9,12 @@ using System.Collections;
 
 public abstract class Actor : MonoBehaviour{
 	IActorInput actorInput;
-	IInventory inventory;
 	IActorStats stats;
+	Inventory inventory;
 
 	public virtual void Awake(){
 		actorInput = (IActorInput)GetComponent(typeof(IActorInput));
-		inventory = (IInventory)this.GetComponent(typeof(IInventory));
+		inventory = this.GetComponent<Inventory>();
 		stats = (IActorStats)this.GetComponent(typeof(IActorStats));
 	}
 

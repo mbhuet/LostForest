@@ -2,6 +2,6 @@
 using System.Collections;
 
 public abstract class Item : MonoBehaviour {
-	public Texture2D icon;
+	public Sprite icon;
 	public GameObject model;
 }
